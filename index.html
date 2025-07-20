@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="La Glue ! - Votre boutique en ligne de confiance au Cameroun. Smartphones, ordinateurs, électroménager et plus encore.">
+    <meta name="keywords" content="boutique en ligne, Cameroun, smartphones, ordinateurs, électroménager, Yaoundé">
+    <meta name="author" content="La Glue !">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="La Glue ! - Votre boutique de confiance">
+    <meta property="og:description" content="Découvrez notre large gamme de produits tech et lifestyle au Cameroun">
+    <meta property="og:image" content="assets/images/logo-social.jpg">
+    <meta property="og:url" content="https://votre-site.com">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="La Glue ! - Votre boutique de confiance">
+    <meta property="twitter:description" content="Découvrez notre large gamme de produits tech et lifestyle au Cameroun">
+    <meta property="twitter:image" content="assets/images/logo-social.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    
+    <!-- PWA -->
+    <meta name="theme-color" content="#4A90E2">
+    <link rel="manifest" href="manifest.json">
+    
+    <title>La Glue ! - Votre boutique de confiance au Cameroun</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Header responsive -->
+    <header class="header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="Navigation principale">
+            <div class="container">
+                <!-- Logo -->
+                <div class="logo">
+                    <span class="logo-text">La Glue !</span>
+                </div>
+
+                <!-- Menu desktop/mobile -->
+                <ul class="nav-menu" id="navMenu" role="menubar">
+                    <li role="none">
+                        <a href="#" onclick="showSection('home')" class="nav-link active" role="menuitem" aria-label="Accueil">
+                            <!--<span class="hide-mobile"></span> -->
+                           🏠 Accueil
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="#" onclick="showSection('products')" class="nav-link" role="menuitem" aria-label="Produits">
+                            <!--<span class="hide-mobile"></span> -->
+                             🛍️ Produits
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="#" onclick="showSection('contact')" class="nav-link" role="menuitem" aria-label="Contact">
+                            <!--<span class="hide-mobile"></span> -->
+                           📞 Contact
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="#" onclick="showSection('profile')" class="nav-link" role="menuitem" aria-label="Mon profil">
+                            <!--<span class="hide-mobile"></span> -->
+                            👤 Profil
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Actions navigation -->
+                <div class="nav-actions">
+                    <!-- Panier -->
+                    <button class="cart-btn" id="cartBtn" onclick="openCart()" aria-label="Ouvrir le panier" aria-describedby="cartCount">
+                        <span class="btn-icon">🛒</span>
+                        <span class="hide-mobile btn-text">Panier</span>
+                        <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+                    </button>
+
+                    <!-- Menu hamburger mobile -->
+                    <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navMenu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main" role="main">
+        <div class="container">
+            <!-- Section Accueil -->
+            <section id="home" class="section active" aria-labelledby="home-title">
+                <h1 id="home-title" class="section-title">Bienvenue chez La Glue !</h1>
+                
+                <div class="hero">
+                    <h2 class="hero-title">Votre boutique de confiance</h2>
+                    <p class="hero-subtitle">Découvrez notre large gamme de produits de qualité, livrés rapidement partout à Yaoundé</p>
+                    <button class="hero-btn" onclick="showSection('products')" aria-label="Découvrir nos produits">
+                        <span class="btn-icon">🚀</span>
+                        Découvrir nos produits
+                    </button>
+                </div>
+
+                <!-- Produits en vedette -->
+                <div class="product-categories">
+                    <!-- Produits récents -->
+                    <div class="category-section">
+                        <h2 class="category-title">
+                            <span class="category-icon">🆕</span>
+                            Nouveautés
+                        </h2>
+                        <div class="products-grid" id="recentProducts" role="region" aria-label="Produits récents">
+                            <!-- Produits chargés par JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Produits populaires -->
+                    <div class="category-section">
+                        <h2 class="category-title">
+                            <span class="category-icon">🔥</span>
+                            Populaires
+                        </h2>
+                        <div class="products-grid" id="popularProducts" role="region" aria-label="Produits populaires">
+                            <!-- Produits chargés par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Produits -->
+            <section id="products" class="section" aria-labelledby="products-title">
+                <h1 id="products-title" class="section-title">Nos Produits</h1>
+
+                <!-- Filtres responsive -->
+                <div class="filters" role="region" aria-label="Filtres de produits">
+                    <!-- Filtres par catégorie -->
+                    <div class="filter-group">
+                        <h3 class="filter-title">Catégories</h3>
+                        <div class="filter-buttons" role="group" aria-label="Filtrer par catégorie">
+                            <button class="category-filter-btn active" data-category="all" aria-pressed="true">
+                                <span class="show-mobile">📦</span> Tous
+                            </button>
+                            <button class="category-filter-btn" data-category="smartphones" aria-pressed="false">
+                                📱 <span class="hide-mobile">Smartphones</span><span class="show-mobile">Phones</span>
+                            </button>
+                            <button class="category-filter-btn" data-category="ordinateurs" aria-pressed="false">
+                                💻 <span class="hide-mobile">Ordinateurs</span><span class="show-mobile">PC</span>
+                            </button>
+                            <button class="category-filter-btn" data-category="audio" aria-pressed="false">
+                                🎧 Audio
+                            </button>
+                            <button class="category-filter-btn" data-category="electromenager" aria-pressed="false">
+                                🏠 <span class="hide-mobile">Électroménager</span><span class="show-mobile">Maison</span>
+                            </button>
+                            <button class="category-filter-btn" data-category="alimentation" aria-pressed="false">
+                                🍽️ <span class="hide-mobile">Alimentation</span><span class="show-mobile">Food</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtres d'affichage -->
+                    <div class="filter-group">
+                        <h3 class="filter-title">Affichage</h3>
+                        <div class="filter-buttons" role="group" aria-label="Type d'affichage">
+                            <button class="filter-btn active" data-type="display" data-filter="all" aria-pressed="true">
+                                Tous les produits
+                            </button>
+                            <button class="filter-btn" data-type="display" data-filter="recent" aria-pressed="false">
+                                🆕 Nouveautés
+                            </button>
+                            <button class="filter-btn" data-type="display" data-filter="popular" aria-pressed="false">
+                                🔥 Populaires
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recherche responsive -->
+                    <div class="search-group">
+                        <label for="searchInput" class="sr-only">Rechercher des produits</label>
+                        <input type="search" 
+                               id="searchInput" 
+                               class="search-input" 
+                               placeholder="Rechercher un produit..."
+                               aria-label="Rechercher des produits"
+                               autocomplete="off">
+                        <button class="search-btn" onclick="performSearch(document.getElementById('searchInput').value)" aria-label="Lancer la recherche">
+                            🔍 <span class="hide-mobile">Rechercher</span>
+                        </button>
+                        <button class="clear-search-btn" onclick="document.getElementById('searchInput').value=''; performSearch('');" aria-label="Effacer la recherche">
+                            ✖️ <span class="hide-mobile">Effacer</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Résultats -->
+                <div class="products-container">
+                    <div class="results-info" id="resultsCount" aria-live="polite">
+                        Chargement des produits...
+                    </div>
+                    <div class="products-grid" id="allProducts" role="region" aria-label="Liste des produits">
+                        <!-- Produits chargés par JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Contact -->
+            <section id="contact" class="section" aria-labelledby="contact-title">
+                <h1 id="contact-title" class="section-title">Contactez-nous</h1>
+                
+                <div class="contact-container">
+                    <!-- Informations de contact -->
+                    <div class="contact-info">
+                        <h2>Nos coordonnées</h2>
+                        <div class="contact-item">
+                            <span class="contact-icon" aria-hidden="true">📱</span>
+                            <span>
+                                <strong>WhatsApp:</strong> 
+                                <a href="https://wa.me/237655912990" target="_blank" rel="noopener" aria-label="Contacter via WhatsApp">
+                                    +237 655 912 990
+                                </a>
+                            </span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon" aria-hidden="true">📍</span>
+                            <span><strong>Adresse:</strong> Yaoundé, Cameroun</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon" aria-hidden="true">🕒</span>
+                            <span><strong>Horaires:</strong> Lun - Sam: 8h - 17h</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon" aria-hidden="true">🚚</span>
+                            <span><strong>Livraison:</strong> Partout à Yaoundé</span>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de contact responsive -->
+                    <div class="contact-form-container">
+                        <h2>Envoyez-nous un message</h2>
+                        <form class="contact-form" id="contactForm" novalidate>
+                            <div class="form-group">
+                                <label for="contactName">Votre nom *</label>
+                                <input type="text" 
+                                       id="contactName" 
+                                       name="name" 
+                                       required 
+                                       aria-required="true"
+                                       placeholder="Entrez votre nom complet"
+                                       autocomplete="name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contactWhatsApp">Numéro WhatsApp *</label>
+                                <input type="tel" 
+                                       id="contactWhatsApp" 
+                                       name="whatsapp" 
+                                       required 
+                                       aria-required="true"
+                                       placeholder="Ex: +237 6XX XXX XXX"
+                                       autocomplete="tel">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contactMessage">Votre message *</label>
+                                <textarea id="contactMessage" 
+                                         name="message" 
+                                         rows="5" 
+                                         required 
+                                         aria-required="true"
+                                         placeholder="Décrivez votre demande..."
+                                         maxlength="500"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn" aria-describedby="contact-help">
+                                <span class="btn-icon">📤</span>
+                                Envoyer via WhatsApp
+                            </button>
+                            <small id="contact-help" class="form-help">
+                                Votre message sera envoyé directement via WhatsApp
+                            </small>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Profil -->
+            <section id="profile" class="section" aria-labelledby="profile-title">
+                <h1 id="profile-title" class="section-title">Mon Profil</h1>
+
+                <!-- Section d'authentification -->
+                <div class="auth-section" id="authSection">
+                    <h2>Connexion</h2>
+                    <p class="auth-description">
+                        Connectez-vous avec votre numéro WhatsApp pour accéder à votre profil et suivre vos commandes.
+                    </p>
+                    
+                    <form class="auth-form" id="authForm" novalidate>
+                        <div class="form-group">
+                            <label for="authWhatsApp">Numéro WhatsApp</label>
+                            <input type="tel" 
+                                   id="authWhatsApp" 
+                                   name="whatsapp" 
+                                   required 
+                                   aria-required="true"
+                                   placeholder="Ex: +237 6XX XXX XXX"
+                                   autocomplete="tel">
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-icon">🔐</span>
+                            Se connecter
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Section profil connecté -->
+                <div class="profile-section" id="profileSection" style="display: none;">
+                    <div class="profile-header">
+                        <div class="user-info">
+                            <div>
+                                <strong>Connecté: </strong>
+                                <span id="connectedUser" aria-live="polite">-</span>
+                            </div>
+                            <button class="logout-btn" id="logoutBtn" aria-label="Se déconnecter">
+                                🚪 Déconnexion
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de profil -->
+                    <form class="profile-form" id="profileForm" novalidate>
+                        <div class="form-group">
+                            <label for="profileName">Nom complet</label>
+                            <input type="text" 
+                                   id="profileName" 
+                                   name="name" 
+                                   placeholder="Votre nom complet"
+                                   autocomplete="name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profileAddress">Adresse de livraison</label>
+                            <textarea id="profileAddress" 
+                                     name="address" 
+                                     rows="3" 
+                                     placeholder="Votre adresse complète pour la livraison"
+                                     autocomplete="street-address"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-icon">💾</span>
+                            Sauvegarder
+                        </button>
+                    </form>
+
+                    <!-- Historique des commandes -->
+                    <div class="orders-section">
+                        <h3>Historique de mes achats</h3>
+                        <div class="order-history" id="orderHistory" role="region" aria-label="Historique des commandes">
+                            <!-- Commandes chargées par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal panier responsive -->
+    <div class="modal" id="cartModal" role="dialog" aria-labelledby="cart-modal-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="closeCart()" aria-label="Fermer le panier"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="cart-modal-title">Mon Panier</h2>
+                <button class="modal-close" id="cartModalClose" onclick="closeCart()" aria-label="Fermer le panier">
+                    ×
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="cart-items" id="cartItems" role="list" aria-label="Articles dans le panier">
+                    <!-- Items du panier chargés par JavaScript -->
+                </div>
+                
+                <div class="cart-total" id="cartTotal" style="display: none;" role="region" aria-label="Total du panier">
+                    <!-- Total calculé par JavaScript -->
+                </div>
+            </div>
+            
+            <div class="modal-footer" id="cartFooter" style="display: none;">
+                <!-- Footer avec bouton de commande -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal détails produit responsive -->
+    <div class="modal" id="productDetailsModal" role="dialog" aria-labelledby="product-modal-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="closeProductDetails()" aria-label="Fermer les détails"></div>
+        <div class="modal-content product-details-modal">
+            <div class="modal-header">
+                <h2 id="product-modal-title">Détails du produit</h2>
+                <button class="modal-close" onclick="closeProductDetails()" aria-label="Fermer les détails">
+                    ×
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Galerie d'images responsive -->
+                <div class="product-gallery">
+                    <div class="main-image-container">
+                        <img id="productMainImage" 
+                             class="main-product-image" 
+                             alt="Image principale du produit"
+                             loading="lazy">
+                        
+                        <!-- Navigation d'images -->
+                        <div class="image-navigation">
+                            <button class="nav-btn prev-btn" 
+                                    id="prevImageBtn" 
+                                    onclick="previousImage()" 
+                                    aria-label="Image précédente">
+                                ❮
+                            </button>
+                            <button class="nav-btn next-btn" 
+                                    id="nextImageBtn" 
+                                    onclick="nextImage()" 
+                                    aria-label="Image suivante">
+                                ❯
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Miniatures -->
+                    <div class="thumbnail-gallery" id="thumbnailGallery" role="list" aria-label="Miniatures">
+                        <!-- Miniatures générées par JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Informations produit -->
+                <div class="product-info">
+                    <h3 id="productDetailsTitle" class="product-title">-</h3>
+                    
+                    <!-- Badge catégorie -->
+                    <span id="productCategoryBadge" class="category-badge">-</span>
+                    
+                    <!-- Prix responsive -->
+                    <div class="product-pricing">
+                        <span id="productOriginalPrice" class="original-price" style="display: none;">-</span>
+                        <span id="productCurrentPrice" class="current-price">-</span>
+                        <span id="productDiscount" class="discount-badge" style="display: none;">-</span>
+                    </div>
+                    
+                    <!-- Note et stock -->
+                    <div class="product-meta">
+                        <div id="productRating" class="rating">-</div>
+                        <div id="productStock" class="stock-info">-</div>
+                    </div>
+                    
+                    <!-- Description complète -->
+                    <div class="product-description">
+                        <p id="productFullDescription">-</p>
+                    </div>
+                    
+                    <!-- Caractéristiques -->
+                    <div id="productFeatures" class="product-features" style="display: none;">
+                        <h4>Caractéristiques</h4>
+                        <ul id="productFeaturesList" role="list">
+                            <!-- Liste générée par JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <!-- Tags -->
+                    <div id="productTagsContainer" class="product-tags" style="display: none;">
+                        <h4>Tags</h4>
+                        <div id="productTagsList" class="tags-list">
+                            <!-- Tags générés par JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Contrôles quantité et ajout panier -->
+                    <div class="product-actions">
+                        <div class="quantity-controls">
+                            <label for="productQuantity" class="sr-only">Quantité</label>
+                            <button onclick="adjustQuantity(-1)" 
+                                    aria-label="Diminuer la quantité"
+                                    class="quantity-btn">-</button>
+                            <input type="number" 
+                                   id="productQuantity" 
+                                   value="1" 
+                                   min="1" 
+                                   max="10"
+                                   aria-label="Quantité du produit">
+                            <button onclick="adjustQuantity(1)" 
+                                    aria-label="Augmenter la quantité"
+                                    class="quantity-btn">+</button>
+                        </div>
+                        
+                        <button class="add-to-cart-btn primary" 
+                                onclick="addToCartFromModal()"
+                                aria-describedby="add-cart-help">
+                            <span class="btn-icon">🛒</span>
+                            Ajouter au panier
+                        </button>
+                        <small id="add-cart-help" class="action-help">
+                            Ajouter ce produit à votre panier
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/admin-integration.js"></script>
+
+    <!-- Script d'amélioration responsive -->
+    <script>
+        // Amélioration de l'accessibilité mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du menu mobile améliorée
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', function() {
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    navMenu.classList.toggle('active');
+                });
+                
+                // Fermer le menu avec Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        menuToggle.focus();
+                    }
+                });
+                
+                // Gestion du focus dans le menu
+                const menuItems = navMenu.querySelectorAll('.nav-link');
+                menuItems.forEach((item, index) => {
+                    item.addEventListener('keydown', function(e) {
+                        if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            const nextItem = menuItems[index + 1] || menuItems[0];
+                            nextItem.focus();
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            const prevItem = menuItems[index - 1] || menuItems[menuItems.length - 1];
+                            prevItem.focus();
+                        }
+                    });
+                });
+            }
+            
+            // Amélioration des filtres pour mobile
+            const filterButtons = document.querySelectorAll('.filter-btn, .category-filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Mettre à jour aria-pressed
+                    filterButtons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+                    this.setAttribute('aria-pressed', 'true');
+                });
+            });
+            
+            // Gestion du zoom des images sur mobile
+            const productImages = document.querySelectorAll('.product-image');
+            productImages.forEach(img => {
+                img.addEventListener('touchend', function(e) {
+                    if (e.touches.length === 0) {
+                        // Zoom simple au tap
+                        this.style.transform = this.style.transform === 'scale(1.1)' ? 'scale(1)' : 'scale(1.1)';
+                    }
+                });
+            });
+            
+            // Amélioration de la navigation au clavier dans le panier
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        // Piéger le focus dans le modal
+                        const focusableElements = this.querySelectorAll(
+                            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                        );
+                        const firstElement = focusableElements[0];
+                        const lastElement = focusableElements[focusableElements.length - 1];
+                        
+                        if (e.shiftKey) {
+                            if (document.activeElement === firstElement) {
+                                lastElement.focus();
+                                e.preventDefault();
+                            }
+                        } else {
+                            if (document.activeElement === lastElement) {
+                                firstElement.focus();
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Optimisation des performances sur mobile
+            if (window.innerWidth <= 768) {
+                // Lazy loading amélioré pour mobile
+                const images = document.querySelectorAll('img[loading="lazy"]');
+                if ('IntersectionObserver' in window) {
+                    const imageObserver = new IntersectionObserver((entries, observer) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const img = entry.target;
+                                img.src = img.dataset.src || img.src;
+                                img.classList.remove('lazy');
+                                observer.unobserve(img);
+                            }
+                        });
+                    });
+                    
+                    images.forEach(img => imageObserver.observe(img));
+                }
+                
+                // Réduction des animations sur mobile
+                document.body.classList.add('mobile-optimized');
+            }
+            
+            // Gestion de l'orientation sur mobile
+            window.addEventListener('orientationchange', function() {
+                // Forcer le redimensionnement après rotation
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                    
+                    // Réajuster la taille du modal si ouvert
+                    const activeModal = document.querySelector('.modal.active');
+                    if (activeModal) {
+                        const modalContent = activeModal.querySelector('.modal-content');
+                        if (modalContent) {
+                            modalContent.style.maxHeight = '90vh';
+                        }
+                    }
+                }, 500);
+            });
+            
+            // Touch gestures pour la navigation des images
+            let startX = 0;
+            let startY = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                if (!startX || !startY) return;
+                
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                
+                const diffX = startX - endX;
+                const diffY = startY - endY;
+                
+                // Swipe horizontal sur les galeries d'images
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                    const imageGallery = e.target.closest('.product-gallery');
+                    if (imageGallery) {
+                        if (diffX > 0) {
+                            // Swipe gauche - image suivante
+                            nextImage();
+                        } else {
+                            // Swipe droite - image précédente
+                            previousImage();
+                        }
+                    }
+                }
+                
+                startX = 0;
+                startY = 0;
+            });
+            
+            console.log('✅ Améliorations responsive chargées');
+        });
+        
+        // Fonction utilitaire pour détecter le type d'appareil
+        function getDeviceType() {
+            const width = window.innerWidth;
+            if (width <= 480) return 'mobile-small';
+            if (width <= 768) return 'mobile';
+            if (width <= 1024) return 'tablet';
+            return 'desktop';
+        }
+        
+        // Ajuster l'interface selon l'appareil
+        function adjustForDevice() {
+            const deviceType = getDeviceType();
+            document.body.className = document.body.className.replace(/device-\w+/g, '');
+            document.body.classList.add(`device-${deviceType}`);
+            
+            // Ajustements spécifiques
+            if (deviceType.includes('mobile')) {
+                // Optimisations mobile
+                const productCards = document.querySelectorAll('.product-card');
+                productCards.forEach(card => {
+                    card.style.minHeight = 'auto';
+                });
+            }
+        }
+        
+        // Appliquer les ajustements au chargement et au redimensionnement
+        window.addEventListener('load', adjustForDevice);
+        window.addEventListener('resize', debounce(adjustForDevice, 250));
+        
+        // Performance: réduire les animations sur les appareils lents
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
+            document.body.classList.add('low-performance');
+        }
+    </script>
+</body>
+</html>

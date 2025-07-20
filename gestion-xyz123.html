@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Glue ! - Administration</title>
+    <style>
+        /* Styles pour l'interface admin */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .admin-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn:hover:not(.active) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        input, textarea, select {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        textarea.large {
+            min-height: 120px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card-admin {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .product-card-admin:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image-admin {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .product-info h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .login-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .search-bar {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Styles spécifiques pour la gestion des images multiples */
+        .images-section {
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        .images-section h4 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .image-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .image-upload-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .image-upload-item label {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 120px;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.8rem;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .image-preview.has-image {
+            border-style: solid;
+            border-color: #28a745;
+        }
+
+        .image-preview-btn {
+            margin-top: 0.5rem;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-size: 0.8rem;
+            width: 100%;
+        }
+
+        .image-preview-btn:hover {
+            background: #e9ecef;
+        }
+
+        .descriptions-section {
+            margin-top: 1.5rem;
+        }
+
+        .description-help {
+            background: #e3f2fd;
+            border: 1px solid #2196F3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #1565C0;
+            font-size: 0.9rem;
+        }
+
+        .features-section {
+            margin-top: 1.5rem;
+        }
+
+        .features-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .features-help {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Styles pour gestion images locales */
+        .image-path-display {
+            font-size: 0.75rem;
+            color: #28a745;
+            margin-top: 0.5rem;
+            padding: 0.25rem;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            display: none;
+        }
+
+        .image-path-display.show {
+            display: block;
+        }
+
+        .image-upload-item input[type="text"] {
+            border: 2px solid #e0e0e0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .image-upload-item input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .image-upload-item input[type="text"].valid {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .image-upload-item input[type="text"].invalid {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .image-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            z-index: 5;
+        }
+
+        .image-status.success {
+            background: #28a745;
+            color: white;
+        }
+
+        .image-status.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .images-section code {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .image-upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay de connexion -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-form">
+            <h2>🔐 Administration</h2>
+            <div class="form-group">
+                <input type="password" id="adminPassword" placeholder="Mot de passe administrateur" autocomplete="current-password">
+            </div>
+            <button class="btn" onclick="login()" style="width: 100%; margin-top: 1rem;">
+                🔓 Se connecter
+            </button>
+            <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                Interface réservée aux administrateurs
+            </p>
+        </div>
+    </div>
+
+    <div id="adminInterface" style="display: none;">
+        <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
+        
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>🛍️ La Glue ! - Administration</h1>
+                <p>Interface de gestion des produits et statistiques</p>
+            </div>
+
+            <!-- Onglets -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('dashboard')">📊 Tableau de bord</button>
+                <button class="tab-btn" onclick="showTab('products')">📦 Produits</button>
+                <button class="tab-btn" onclick="showTab('add-product')">➕ Ajouter produit</button>
+                <button class="tab-btn" onclick="showTab('settings')">⚙️ Paramètres</button>
+            </div>
+
+            <!-- Tableau de bord -->
+            <div id="dashboard" class="tab-content active">
+                <h2>📊 Tableau de bord</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalProducts">0</div>
+                        <div class="stat-label">Produits total</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalValue">0</div>
+                        <div class="stat-label">Valeur stock (FCFA)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="lowStockCount">0</div>
+                        <div class="stat-label">Stock faible</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="categoriesCount">0</div>
+                        <div class="stat-label">Catégories</div>
+                    </div>
+                </div>
+                
+                <h3>📈 Aperçu récent</h3>
+                <div id="recentActivity">
+                    <div style="text-align: center; color: #666; padding: 2rem;">
+                        <p>Historique des dernières modifications</p>
+                        <small>Les activités récentes apparaîtront ici</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des produits -->
+            <div id="products" class="tab-content">
+                <h2>📦 Gestion des produits</h2>
+                
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="productSearch" placeholder="Rechercher un produit...">
+                    <button class="search-btn" onclick="searchProducts()">🔍</button>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Les produits seront chargés ici -->
+                </div>
+            </div>
+
+            <!-- Ajouter/modifier produit -->
+            <div id="add-product" class="tab-content">
+                <h2 id="productFormTitle">➕ Ajouter un nouveau produit</h2>
+                
+                <form id="productForm">
+                    <div class="form-grid">
+                        <!-- Informations de base -->
+                        <div class="form-group">
+                            <label for="productName">Nom du produit *</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productCategory">Catégorie *</label>
+                            <select id="productCategory" required>
+                                <option value="">Sélectionner...</option>
+                                <option value="smartphones">📱 Smartphones</option>
+                                <option value="ordinateurs">💻 Ordinateurs</option>
+                                <option value="tablettes">📋 Tablettes</option>
+                                <option value="audio">🎧 Audio</option>
+                                <option value="accessoires">⌚ Accessoires</option>
+                                <option value="electromenager">🏠 Électroménager</option>
+                                <option value="alimentation">🍽️ Alimentation</option>
+                                <option value="maison">🏡 Maison & Jardin</option>
+                                <option value="mode">👕 Mode & Style</option>
+                                <option value="beaute">🧴 Beauté & Santé</option>
+                                <option value="gaming">🎮 Gaming</option>
+                                <option value="photo">📷 Photo/Vidéo</option>
+                                <option value="sport">⚽ Sport & Loisirs</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Prix -->
+                        <div class="form-group">
+                            <label for="productPrice">Prix (FCFA) *</label>
+                            <input type="number" id="productPrice" min="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productOriginalPrice">Prix original (si promotion)</label>
+                            <input type="number" id="productOriginalPrice" min="0">
+                        </div>
+                        
+                        <!-- Stock et évaluation -->
+                        <div class="form-group">
+                            <label for="productStock">Stock disponible</label>
+                            <input type="number" id="productStock" min="0" value="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productRating">Note (0-5)</label>
+                            <input type="number" id="productRating" min="0" max="5" step="0.1" value="4.0">
+                        </div>
+
+                        <!-- Priorité et tags -->
+                        <div class="form-group">
+                            <label for="productPriority">Priorité d'affichage</label>
+                            <select id="productPriority">
+                                <option value="">Normal</option>
+                                <option value="recent">Récent</option>
+                                <option value="popular">Populaire</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productTags">Tags (séparés par des virgules)</label>
+                            <input type="text" id="productTags" placeholder="nouveau, promo, tendance">
+                        </div>
+                    </div>
+
+                    <!-- Section descriptions -->
+                    <div class="descriptions-section">
+                        <div class="description-help">
+                            <strong>📝 Aide sur les descriptions :</strong><br>
+                            • <strong>Description courte</strong> : Apparaît sur les cartes produits (80-100 caractères max)<br>
+                            • <strong>Description complète</strong> : Apparaît dans la fenêtre modale de détails (détaillée)
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="productDescription">Description courte (pour les cartes) *</label>
+                                <textarea id="productDescription" rows="3" maxlength="120" required 
+                                         placeholder="Description courte qui apparaîtra sur la carte produit..."></textarea>
+                                <div class="features-help">Maximum 120 caractères - apparaît sur les cartes produits</div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="productFullDescription">Description complète (pour la modale) *</label>
+                                <textarea id="productFullDescription" class="large" rows="6" required 
+                                         placeholder="Description détaillée avec toutes les spécifications, utilisation, avantages..."></textarea>
+                                <div class="features-help">Description détaillée qui apparaîtra dans la fenêtre de détails</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section caractéristiques -->
+                    <div class="features-section">
+                        <div class="form-group full-width">
+                            <label for="productFeatures">Caractéristiques principales</label>
+                            <textarea id="productFeatures" class="features-input" rows="4" 
+                                     placeholder="Une caractéristique par ligne&#10;Exemple:&#10;Écran 6.1 pouces&#10;Batterie 3000 mAh&#10;Mémoire 128 GB"></textarea>
+                            <div class="features-help">Une caractéristique par ligne - apparaîtront comme liste à puces dans les détails</div>
+                        </div>
+                    </div>
+
+                    <!-- Section images (stockage local) -->
+                    <div class="images-section">
+                        <h4>📷 Gestion des images (3 images requises)</h4>
+                        <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">
+                            Placez vos images dans le dossier <strong>assets/images/products/</strong><br>
+                            Puis saisissez seulement le nom du fichier (ex: iphone15.jpg)
+                        </p>
+
+                        <div class="image-upload-grid">
+                            <!-- Image 1 (principale) -->
+                            <div class="image-upload-item">
+                                <label>Image 1 (Principale) *</label>
+                                <div class="image-preview" id="imagePreview1">
+                                    <span>Saisissez le nom de fichier puis cliquez "Aperçu"</span>
+                                </div>
+                                <input type="text" id="productImage1" placeholder="exemple: iphone15-face.jpg" required>
+                                <button type="button" onclick="showLocalImagePreview(1)" class="image-preview-btn">
+                                    📷 Aperçu Image 1
+                                </button>
+                                <div class="image-path-display" id="imagePath1"></div>
+                            </div>
+
+                            <!-- Image 2 -->
+                            <div class="image-upload-item">
+                                <label>Image 2 *</label>
+                                <div class="image-preview" id="imagePreview2">
+                                    <span>Saisissez le nom de fichier puis cliquez "Aperçu"</span>
+                                </div>
+                                <input type="text" id="productImage2" placeholder="exemple: iphone15-back.jpg" required>
+                                <button type="button" onclick="showLocalImagePreview(2)" class="image-preview-btn">
+                                    📷 Aperçu Image 2
+                                </button>
+                                <div class="image-path-display" id="imagePath2"></div>
+                            </div>
+
+                            <!-- Image 3 -->
+                            <div class="image-upload-item">
+                                <label>Image 3 *</label>
+                                <div class="image-preview" id="imagePreview3">
+                                    <span>Saisissez le nom de fichier puis cliquez "Aperçu"</span>
+                                </div>
+                                <input type="text" id="productImage3" placeholder="exemple: iphone15-side.jpg" required>
+                                <button type="button" onclick="showLocalImagePreview(3)" class="image-preview-btn">
+                                    📷 Aperçu Image 3
+                                </button>
+                                <div class="image-path-display" id="imagePath3"></div>
+                            </div>
+                        </div>
+
+                        <div style="background: #e3f2fd; border: 1px solid #2196F3; border-radius: 8px; padding: 1rem; margin-top: 1rem; color: #1565C0; font-size: 0.9rem;">
+                            <strong>💡 Instructions pour les images :</strong><br>
+                            1. Placez vos images dans : <code>assets/images/products/</code><br>
+                            2. Formats acceptés : .jpg, .jpeg, .png, .webp<br>
+                            3. Taille recommandée : minimum 400x400px<br>
+                            4. Noms de fichiers sans espaces (utilisez - ou _)<br>
+                            5. Exemple de structure :<br>
+                            <code style="background: rgba(255,255,255,0.8); padding: 2px 4px; border-radius: 3px;">
+                            assets/images/products/iphone15-face.jpg<br>
+                            assets/images/products/iphone15-back.jpg<br>
+                            assets/images/products/iphone15-side.jpg
+                            </code>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons de sauvegarde -->
+                    <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 15px; border: 2px solid #dee2e6;">
+                        <div style="margin-bottom: 1rem;">
+                            <p style="color: #666; margin: 0;">Vérifiez toutes les informations avant de sauvegarder</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-secondary" onclick="clearForm()" style="min-width: 150px;">
+                                🗑️ Effacer le formulaire
+                            </button>
+                            
+                            <button type="submit" class="btn" style="min-width: 200px; font-size: 1.1rem;">
+                                💾 Enregistrer le produit
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                            <span id="saveStatus"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Paramètres -->
+            <div id="settings" class="tab-content">
+                <h2>⚙️ Paramètres</h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Changer le mot de passe admin</label>
+                        <input type="password" id="newPassword" placeholder="Nouveau mot de passe (min. 6 caractères)">
+                        <button class="btn btn-small" onclick="changePassword()">🔐 Changer</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Sauvegarder les données</label>
+                        <button class="btn btn-success btn-small" onclick="exportData()">💾 Télécharger JSON</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Importer des données</label>
+                        <input type="file" id="importFile" accept=".json">
+                        <button class="btn btn-small" onclick="importData()">📤 Importer</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Actions dangereuses</label>
+                        <button class="btn btn-danger btn-small" onclick="resetData()">🗑️ Réinitialiser données</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: #fff3cd; border-radius: 10px; border: 1px solid #ffeaa7;">
+                    <h4 style="color: #856404; margin-bottom: 1rem;">⚠️ Sécurité importante</h4>
+                    <ul style="color: #856404; line-height: 1.6;">
+                        <li>Changez le mot de passe par défaut immédiatement</li>
+                        <li>Ne partagez jamais l'URL de cette interface</li>
+                        <li>Effectuez des sauvegardes régulières</li>
+                        <li>Pour la production, utilisez une authentification serveur</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration de sécurité
+        const ADMIN_PASSWORD_KEY = 'laglue_admin_password';
+        const DEFAULT_PASSWORD = 'LaGlue2024!'; // ⚠️ CHANGEZ IMMÉDIATEMENT !
+        
+        let currentEditingId = null;
+        let productsData = [];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAdmin();
+        });
+
+        function initializeAdmin() {
+            loadProducts();
+            
+            const savedPassword = localStorage.getItem(ADMIN_PASSWORD_KEY);
+            if (!savedPassword) {
+                localStorage.setItem(ADMIN_PASSWORD_KEY, DEFAULT_PASSWORD);
+            }
+            
+            // Configuration du formulaire
+            const form = document.getElementById('productForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveProduct(e);
+                });
+            }
+            
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            
+            updateDashboard();
+            setupImageInputListeners();
+        }
+
+        function login() {
+            const password = document.getElementById('adminPassword').value;
+            const correctPassword = localStorage.getItem(ADMIN_PASSWORD_KEY) || DEFAULT_PASSWORD;
+            
+            if (password === correctPassword) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('adminInterface').style.display = 'block';
+                showNotification('Connexion réussie ! Bienvenue administrateur.', 'success');
+                loadProductsDisplay();
+            } else {
+                showNotification('Mot de passe incorrect !', 'error');
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('adminInterface').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            showNotification('Déconnexion réussie', 'success');
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'products') {
+                loadProductsDisplay();
+            } else if (tabName === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        // Gestion des aperçus d'images locales
+        function showLocalImagePreview(imageNumber) {
+            const imageInput = document.getElementById(`productImage${imageNumber}`);
+            const previewContainer = document.getElementById(`imagePreview${imageNumber}`);
+            const pathDisplay = document.getElementById(`imagePath${imageNumber}`);
+            const fileName = imageInput.value.trim();
+            
+            if (!fileName) {
+                showNotification('Veuillez saisir un nom de fichier !', 'error');
+                return;
+            }
+            
+            // Vérifier l'extension du fichier
+            const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+            const hasValidExtension = validExtensions.some(ext => 
+                fileName.toLowerCase().endsWith(ext)
+            );
+            
+            if (!hasValidExtension) {
+                showNotification('Extension non valide ! Utilisez: .jpg, .jpeg, .png, .webp', 'error');
+                imageInput.classList.add('invalid');
+                imageInput.classList.remove('valid');
+                return;
+            }
+            
+            // Construire le chemin complet
+            const fullPath = `assets/images/products/${fileName}`;
+            
+            // Afficher le chemin
+            pathDisplay.textContent = fullPath;
+            pathDisplay.classList.add('show');
+            
+            // Créer un élément image pour tester le chargement
+            const img = new Image();
+            
+            // Afficher un indicateur de chargement
+            previewContainer.innerHTML = `
+                <div class="loading-indicator">⏳ Chargement...</div>
+                <span>Vérification du fichier...</span>
+            `;
+            
+            img.onload = function() {
+                previewContainer.innerHTML = `
+                    <img src="${fullPath}" alt="Aperçu ${imageNumber}">
+                    <div class="image-status success">✓</div>
+                `;
+                previewContainer.classList.add('has-image');
+                imageInput.classList.add('valid');
+                imageInput.classList.remove('invalid');
+                showNotification(`Image ${imageNumber} trouvée et chargée !`, 'success');
+            };
+            
+            img.onerror = function() {
+                previewContainer.innerHTML = `
+                    <span style="color: #dc3545;">❌ Fichier non trouvé</span>
+                    <div class="image-status error">✗</div>
+                `;
+                previewContainer.classList.remove('has-image');
+                imageInput.classList.add('invalid');
+                imageInput.classList.remove('valid');
+                showNotification(`Fichier non trouvé: ${fileName}`, 'error');
+            };
+            
+            img.src = fullPath;
+        }
+
+        function validateAllImages() {
+            let allValid = true;
+            const imageInputs = ['productImage1', 'productImage2', 'productImage3'];
+            
+            imageInputs.forEach((inputId, index) => {
+                const input = document.getElementById(inputId);
+                const fileName = input.value.trim();
+                
+                if (!fileName) {
+                    allValid = false;
+                    input.classList.add('invalid');
+                    showNotification(`Image ${index + 1} manquante !`, 'error');
+                }
+            });
+            
+            return allValid;
+        }
+
+        function getImagePaths() {
+            const image1 = document.getElementById('productImage1').value.trim();
+            const image2 = document.getElementById('productImage2').value.trim();
+            const image3 = document.getElementById('productImage3').value.trim();
+            
+            return [
+                `assets/images/products/${image1}`,
+                `assets/images/products/${image2}`,
+                `assets/images/products/${image3}`
+            ];
+        }
+
+        function cleanFileName(fileName) {
+            return fileName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9.-]/g, '');
+        }
+
+        function setupImageInputListeners() {
+            ['productImage1', 'productImage2', 'productImage3'].forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        const cleaned = cleanFileName(this.value);
+                        if (cleaned !== this.value) {
+                            this.value = cleaned;
+                        }
+                        
+                        this.classList.remove('valid', 'invalid');
+                        
+                        const pathDisplay = document.getElementById(`imagePath${inputId.slice(-1)}`);
+                        if (pathDisplay) {
+                            pathDisplay.classList.remove('show');
+                        }
+                    });
+                }
+            });
+        }
+
+        function loadProducts() {
+            const savedProducts = localStorage.getItem('laglue_products');
+            if (savedProducts) {
+                productsData = JSON.parse(savedProducts);
+            } else {
+                productsData = [
+                    {
+                        id: 1,
+                        name: "iPhone 15 Pro",
+                        category: "smartphones",
+                        price: 750000,
+                        original_price: 800000,
+                        description: "iPhone 15 Pro avec puce A17 Pro",
+                        full_description: "iPhone 15 Pro avec puce A17 Pro révolutionnaire, appareil photo professionnel et design en titane de qualité aéronautique.",
+                        features: ["Puce A17 Pro", "Écran 6.1\" Super Retina XDR", "Triple appareil photo 48 Mpx", "Design en titane"],
+                        images: [
+                            "assets/images/products/iphone15-face.jpg",
+                            "assets/images/products/iphone15-back.jpg", 
+                            "assets/images/products/iphone15-side.jpg"
+                        ],
+                        main_image: "assets/images/products/iphone15-face.jpg",
+                        stock: { quantity: 8, status: "in_stock" },
+                        rating: 4.8,
+                        tags: ["nouveau", "haut-de-gamme"],
+                        display_priority: "recent"
+                    },
+                    {
+                        id: 2,
+                        name: "MacBook Air M2",
+                        category: "ordinateurs",
+                        price: 980000,
+                        original_price: null,
+                        description: "MacBook Air avec puce M2, design ultra-fin",
+                        full_description: "Le MacBook Air M2 13 pouces incarne la puissance dans un design incroyablement fin de seulement 11,3 mm d'épaisseur.",
+                        features: ["Puce Apple M2", "Écran 13.6\" Liquid Retina", "8 GB RAM", "SSD 256 GB"],
+                        images: [
+                            "assets/images/products/macbook-air-front.jpg",
+                            "assets/images/products/macbook-air-side.jpg",
+                            "assets/images/products/macbook-air-open.jpg"
+                        ],
+                        main_image: "assets/images/products/macbook-air-front.jpg",
+                        stock: { quantity: 5, status: "low_stock" },
+                        rating: 4.7,
+                        tags: ["haut-de-gamme"],
+                        display_priority: "popular"
+                    }
+                ];
+                saveProductsToStorage();
+            }
+        }
+
+        function saveProductsToStorage() {
+            localStorage.setItem('laglue_products', JSON.stringify(productsData));
+            const mainSiteData = {
+                products: productsData,
+                store_info: {
+                    name: "La Glue !",
+                    contact: { whatsapp: "237655912990" }
+                }
+            };
+            localStorage.setItem('laglue_main_data', JSON.stringify(mainSiteData));
+        }
+
+        function saveProduct(e) {
+            if (e) e.preventDefault();
+            
+            console.log('🚀 Début de la sauvegarde du produit...');
+            
+            const saveStatus = document.getElementById('saveStatus');
+            if (saveStatus) {
+                saveStatus.textContent = '⏳ Sauvegarde en cours...';
+                saveStatus.style.color = '#667eea';
+            }
+            
+            try {
+                // Validation des champs obligatoires
+                const requiredFields = [
+                    { id: 'productName', name: 'Nom du produit' },
+                    { id: 'productCategory', name: 'Catégorie' },
+                    { id: 'productPrice', name: 'Prix' },
+                    { id: 'productDescription', name: 'Description courte' },
+                    { id: 'productFullDescription', name: 'Description complète' }
+                ];
+                
+                for (let field of requiredFields) {
+                    const element = document.getElementById(field.id);
+                    if (!element || !element.value.trim()) {
+                        showNotification(`${field.name} est obligatoire !`, 'error');
+                        if (saveStatus) saveStatus.textContent = '❌ Erreur - champs manquants';
+                        return;
+                    }
+                }
+                
+                // Validation des images
+                if (!validateAllImages()) {
+                    showNotification('Les 3 images sont obligatoires !', 'error');
+                    if (saveStatus) saveStatus.textContent = '❌ Erreur - images manquantes';
+                    return;
+                }
+                
+                const imagePaths = getImagePaths();
+                const featuresText = document.getElementById('productFeatures').value;
+                const features = featuresText ? featuresText.split('\n').filter(f => f.trim()) : [];
+                
+                const productData = {
+                    id: currentEditingId || Date.now(),
+                    name: document.getElementById('productName').value.trim(),
+                    category: document.getElementById('productCategory').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    original_price: document.getElementById('productOriginalPrice').value ? 
+                        parseFloat(document.getElementById('productOriginalPrice').value) : null,
+                    description: document.getElementById('productDescription').value.trim(),
+                    full_description: document.getElementById('productFullDescription').value.trim(),
+                    features: features,
+                    images: imagePaths,
+                    main_image: imagePaths[0],
+                    stock: {
+                        quantity: parseInt(document.getElementById('productStock').value) || 0,
+                        status: parseInt(document.getElementById('productStock').value) > 5 ? "in_stock" : "low_stock"
+                    },
+                    rating: parseFloat(document.getElementById('productRating').value) || 4.0,
+                    tags: document.getElementById('productTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                    display_priority: document.getElementById('productPriority').value || null,
+                    reviews_count: Math.floor(Math.random() * 50) + 10
+                };
+                
+                if (productData.original_price && productData.original_price > productData.price) {
+                    productData.discount_percent = Math.round((1 - productData.price / productData.original_price) * 100);
+                } else {
+                    productData.discount_percent = 0;
+                }
+                
+                if (currentEditingId) {
+                    const index = productsData.findIndex(p => p.id === currentEditingId);
+                    if (index !== -1) {
+                        productsData[index] = productData;
+                        showNotification('Produit modifié avec succès !', 'success');
+                        if (saveStatus) saveStatus.textContent = '✅ Produit modifié avec succès !';
+                    }
+                } else {
+                    productsData.push(productData);
+                    showNotification('Nouveau produit ajouté avec succès !', 'success');
+                    if (saveStatus) saveStatus.textContent = '✅ Nouveau produit ajouté !';
+                }
+                
+                saveProductsToStorage();
+                
+                setTimeout(() => {
+                    clearForm();
+                    updateDashboard();
+                    showTab('products');
+                }, 1500);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la sauvegarde:', error);
+                showNotification('Erreur lors de la sauvegarde: ' + error.message, 'error');
+                if (saveStatus) {
+                    saveStatus.textContent = '❌ Erreur lors de la sauvegarde';
+                    saveStatus.style.color = '#dc3545';
+                }
+            }
+        }
+
+        function clearForm() {
+            const form = document.getElementById('productForm');
+            if (form) form.reset();
+            
+            currentEditingId = null;
+            
+            const title = document.getElementById('productFormTitle');
+            if (title) title.textContent = '➕ Ajouter un nouveau produit';
+            
+            for (let i = 1; i <= 3; i++) {
+                const preview = document.getElementById(`imagePreview${i}`);
+                const pathDisplay = document.getElementById(`imagePath${i}`);
+                const input = document.getElementById(`productImage${i}`);
+                
+                if (preview) {
+                    preview.innerHTML = '<span>Saisissez le nom de fichier puis cliquez "Aperçu"</span>';
+                    preview.classList.remove('has-image');
+                }
+                
+                if (pathDisplay) {
+                    pathDisplay.classList.remove('show');
+                    pathDisplay.textContent = '';
+                }
+                
+                if (input) {
+                    input.classList.remove('valid', 'invalid');
+                    input.value = '';
+                }
+            }
+            
+            const saveStatus = document.getElementById('saveStatus');
+            if (saveStatus) saveStatus.textContent = '';
+            
+            showNotification('Formulaire réinitialisé', 'info');
+        }
+
+        function loadProductsDisplay() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            if (productsData.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1; padding: 2rem;">Aucun produit. Ajoutez votre premier produit !</p>';
+                return;
+            }
+            
+            productsData.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        function createProductCard(product) {
+            const div = document.createElement('div');
+            div.className = 'product-card-admin';
+            
+            const discount = product.original_price ? 
+                Math.round((1 - product.price / product.original_price) * 100) : 0;
+            
+            const imageCount = product.images ? product.images.length : 0;
+            
+            div.innerHTML = `
+                <img src="${product.main_image}" alt="${product.name}" class="product-image-admin" 
+                     onerror="this.src='https://via.placeholder.com/300x200/667eea/white?text=Image'">
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <div class="product-price">
+                        ${formatPrice(product.price)}
+                        ${discount > 0 ? `<span style="font-size: 0.8em; color: #dc3545;">(-${discount}%)</span>` : ''}
+                    </div>
+                    <p><strong>Catégorie:</strong> ${getCategoryName(product.category)}</p>
+                    <p><strong>Stock:</strong> ${product.stock ? product.stock.quantity : 'N/A'}</p>
+                    <p><strong>Images:</strong> ${imageCount}/3 📷</p>
+                    <p><strong>Note:</strong> ${product.rating ? product.rating + '⭐' : 'N/A'}</p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-small" onclick="editProduct(${product.id})">✏️ Modifier</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteProduct(${product.id})">🗑️ Supprimer</button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function editProduct(id) {
+            const product = productsData.find(p => p.id === id);
+            if (!product) return;
+            
+            currentEditingId = id;
+            
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productOriginalPrice').value = product.original_price || '';
+            document.getElementById('productDescription').value = product.description;
+            document.getElementById('productFullDescription').value = product.full_description || '';
+            document.getElementById('productStock').value = product.stock ? product.stock.quantity : 0;
+            document.getElementById('productRating').value = product.rating || 4.0;
+            document.getElementById('productTags').value = product.tags ? product.tags.join(', ') : '';
+            document.getElementById('productPriority').value = product.display_priority || '';
+            
+            if (product.features && product.features.length > 0) {
+                document.getElementById('productFeatures').value = product.features.join('\n');
+            }
+            
+            if (product.images && product.images.length >= 3) {
+                const fileName1 = product.images[0].replace('assets/images/products/', '');
+                const fileName2 = product.images[1].replace('assets/images/products/', '');
+                const fileName3 = product.images[2].replace('assets/images/products/', '');
+                
+                document.getElementById('productImage1').value = fileName1;
+                document.getElementById('productImage2').value = fileName2;
+                document.getElementById('productImage3').value = fileName3;
+                
+                setTimeout(() => {
+                    showLocalImagePreview(1);
+                    showLocalImagePreview(2);
+                    showLocalImagePreview(3);
+                }, 200);
+            }
+            
+            document.getElementById('productFormTitle').textContent = '✏️ Modifier le produit';
+            showTab('add-product');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+                productsData = productsData.filter(p => p.id !== id);
+                saveProductsToStorage();
+                loadProductsDisplay();
+                updateDashboard();
+                showNotification('Produit supprimé avec succès !', 'success');
+            }
+        }
+
+        function updateDashboard() {
+            const totalProducts = productsData.length;
+            const totalValue = productsData.reduce((sum, product) => sum + (product.price * (product.stock?.quantity || 0)), 0);
+            const lowStockCount = productsData.filter(product => (product.stock?.quantity || 0) < 5).length;
+            const categories = [...new Set(productsData.map(p => p.category))].length;
+            
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalValue').textContent = formatPrice(totalValue);
+            document.getElementById('lowStockCount').textContent = lowStockCount;
+            document.getElementById('categoriesCount').textContent = categories;
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            const filteredProducts = productsData.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.category.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
+            );
+            
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">Aucun produit trouvé pour cette recherche.</p>';
+                return;
+            }
+            
+            filteredProducts.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        function changePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            if (!newPassword || newPassword.length < 6) {
+                showNotification('Le mot de passe doit contenir au moins 6 caractères !', 'error');
+                return;
+            }
+            
+            if (confirm('Êtes-vous sûr de vouloir changer le mot de passe administrateur ?')) {
+                localStorage.setItem(ADMIN_PASSWORD_KEY, newPassword);
+                document.getElementById('newPassword').value = '';
+                showNotification('Mot de passe changé avec succès !', 'success');
+            }
+        }
+
+        function exportData() {
+            const dataToExport = {
+                products: productsData,
+                exportDate: new Date().toISOString(),
+                version: "2.0"
+            };
+            
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `laglue-products-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Données exportées avec succès !', 'success');
+        }
+
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Veuillez sélectionner un fichier !', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (importedData.products && Array.isArray(importedData.products)) {
+                        if (confirm('Cette action remplacera tous les produits existants. Continuer ?')) {
+                            productsData = importedData.products;
+                            saveProductsToStorage();
+                            loadProductsDisplay();
+                            updateDashboard();
+                            showNotification('Données importées avec succès !', 'success');
+                        }
+                    } else {
+                        showNotification('Format de fichier invalide !', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Erreur lors de la lecture du fichier !', 'error');
+                    console.error('Import error:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            fileInput.value = '';
+        }
+
+        function resetData() {
+            if (confirm('⚠️ ATTENTION : Cette action supprimera TOUS les produits de manière irréversible. Êtes-vous absolument sûr ?')) {
+                if (confirm('Dernière confirmation : Supprimer TOUS les produits ?')) {
+                    productsData = [];
+                    saveProductsToStorage();
+                    loadProductsDisplay();
+                    updateDashboard();
+                    showNotification('Toutes les données ont été supprimées !', 'success');
+                }
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelectorAll('.notification');
+            existing.forEach(notif => notif.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 4000);
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'smartphones': 'Smartphones',
+                'ordinateurs': 'Ordinateurs',
+                'tablettes': 'Tablettes',
+                'audio': 'Audio',
+                'accessoires': 'Accessoires',
+                'electromenager': 'Électroménager',
+                'alimentation': 'Alimentation',
+                'maison': 'Maison & Jardin',
+                'mode': 'Mode & Style',
+                'beaute': 'Beauté & Santé',
+                'gaming': 'Gaming',
+                'photo': 'Photo/Vidéo',
+                'sport': 'Sport & Loisirs'
+            };
+            return names[category] || 'Autre';
+        }
+
+        // Recherche en temps réel
+        setTimeout(() => {
+            const searchInput = document.getElementById('productSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(searchProducts, 300);
+                });
+            }
+        }, 100);
+
+        // Sauvegarde automatique
+        function autoSave() {
+            saveProductsToStorage();
+            console.log('💾 Sauvegarde automatique effectuée');
+        }
+
+        setInterval(autoSave, 5 * 60 * 1000);
+
+        window.addEventListener('beforeunload', function(e) {
+            autoSave();
+        });
+    </script>
+</body>
+</html>
