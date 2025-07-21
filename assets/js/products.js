@@ -1,11 +1,12 @@
 /* ==========================================
-   GESTION DES PRODUITS - LA GLUE ! (VERSION COMPLÈTE)
-   SANS démo + Modal détails fonctionnelle
+   GESTION DES PRODUITS - LA GLUE ! (VERSION AVEC CATÉGORIES DYNAMIQUES)
+   SANS démo + Modal détails fonctionnelle + Catégories depuis admin
    ========================================== */
 
 // Variables globales
 let allProducts = [];
 let filteredProducts = [];
+let allCategories = {};
 let isLoading = false;
 
 // Variables pour la modal détails
@@ -24,10 +25,11 @@ function initializeProducts() {
     }
     
     isLoading = true;
-    console.log('🚀 Initialisation des produits (ADMIN UNIQUEMENT)...');
+    console.log('🚀 Initialisation des produits avec catégories dynamiques...');
     
     try {
-        // Charger UNIQUEMENT depuis l'interface admin
+        // Charger d'abord les catégories, puis les produits
+        loadCategoriesFromAdmin();
         const adminProducts = loadProductsFromAdmin();
         
         if (adminProducts && Array.isArray(adminProducts) && adminProducts.length > 0) {
@@ -36,6 +38,7 @@ function initializeProducts() {
             filteredProducts = [...allProducts];
             
             console.log(`✅ ${allProducts.length} produits chargés depuis l'interface admin`);
+            console.log(`✅ ${Object.keys(allCategories).length} catégories chargées depuis l'interface admin`);
             
             // Initialiser l'affichage avec les produits admin
             displayProductsByCategory();
@@ -67,12 +70,147 @@ function initializeProducts() {
         // En cas d'erreur, boutique vide
         allProducts = [];
         filteredProducts = [];
+        allCategories = {};
         showEmptyStoreMessage();
     } finally {
         isLoading = false;
     }
 }
 
+/* ==========================================
+   CHARGEMENT DES CATÉGORIES DEPUIS L'ADMIN
+   ========================================== */
+
+function loadCategoriesFromAdmin() {
+    try {
+        console.log('🏷️ Chargement des catégories depuis l\'interface admin...');
+        
+        // 1. Vérifier la clé des catégories
+        const savedCategories = localStorage.getItem('laglue_categories');
+        if (savedCategories) {
+            try {
+                allCategories = JSON.parse(savedCategories);
+                console.log('✅ Catégories trouvées dans laglue_categories:', Object.keys(allCategories).length);
+                updateCategoryFilters();
+                return allCategories;
+            } catch (parseError) {
+                console.error('❌ Erreur parsing laglue_categories:', parseError);
+            }
+        }
+        
+        // 2. Vérifier l'ancien format de données
+        const mainData = localStorage.getItem('laglue_main_data');
+        if (mainData) {
+            try {
+                const data = JSON.parse(mainData);
+                if (data.categories && typeof data.categories === 'object') {
+                    allCategories = data.categories;
+                    console.log('✅ Catégories trouvées dans laglue_main_data:', Object.keys(allCategories).length);
+                    updateCategoryFilters();
+                    return allCategories;
+                }
+            } catch (parseError) {
+                console.error('❌ Erreur parsing laglue_main_data:', parseError);
+            }
+        }
+        
+        // 3. Catégories par défaut si aucune trouvée
+        console.log('⚠️ Aucune catégorie admin trouvée, utilisation des catégories par défaut');
+        allCategories = getDefaultCategories();
+        updateCategoryFilters();
+        return allCategories;
+        
+    } catch (error) {
+        console.error('❌ Erreur générale lors du chargement des catégories:', error);
+        allCategories = getDefaultCategories();
+        updateCategoryFilters();
+        return allCategories;
+    }
+}
+
+function getDefaultCategories() {
+    return {
+        'smartphones': { name: 'Smartphones', icon: '📱', description: 'Téléphones intelligents de toutes marques' },
+        'ordinateurs': { name: 'Ordinateurs', icon: '💻', description: 'Ordinateurs portables et de bureau' },
+        'tablettes': { name: 'Tablettes', icon: '📋', description: 'Tablettes tactiles pour tous usages' },
+        'audio': { name: 'Audio', icon: '🎧', description: 'Écouteurs, enceintes et accessoires audio' },
+        'accessoires': { name: 'Accessoires', icon: '⌚', description: 'Montres connectées et accessoires tech' },
+        'electromenager': { name: 'Électroménager', icon: '🏠', description: 'Appareils électroménagers pour la maison' },
+        'alimentation': { name: 'Alimentation', icon: '🍽️', description: 'Produits alimentaires et boissons' },
+        'maison': { name: 'Maison & Jardin', icon: '🏡', description: 'Décoration, mobilier et jardinage' },
+        'mode': { name: 'Mode & Style', icon: '👕', description: 'Vêtements et accessoires de mode' },
+        'beaute': { name: 'Beauté & Santé', icon: '🧴', description: 'Produits de beauté et de bien-être' },
+        'gaming': { name: 'Gaming', icon: '🎮', description: 'Jeux vidéo et accessoires gaming' },
+        'photo': { name: 'Photo/Vidéo', icon: '📷', description: 'Appareils photo et matériel vidéo' },
+        'sport': { name: 'Sport & Loisirs', icon: '⚽', description: 'Équipements sportifs et loisirs' }
+    };
+}
+
+/* ==========================================
+   MISE À JOUR DES FILTRES DE CATÉGORIES
+   ========================================== */
+
+function updateCategoryFilters() {
+    const filterButtonsContainer = document.querySelector('.filter-buttons[aria-label="Filtrer par catégorie"]');
+    
+    if (!filterButtonsContainer) {
+        console.log('⚠️ Container des filtres de catégories non trouvé');
+        return;
+    }
+    
+    // Vider complètement le container
+    filterButtonsContainer.innerHTML = '';
+    
+    // Ajouter le bouton "Tous"
+    const allBtn = document.createElement('button');
+    allBtn.className = 'category-filter-btn active';
+    allBtn.setAttribute('data-category', 'all');
+    allBtn.setAttribute('aria-pressed', 'true');
+    allBtn.innerHTML = '<span class="show-mobile">📦</span> Tous';
+    filterButtonsContainer.appendChild(allBtn);
+    
+    // Ajouter les catégories dynamiques
+    Object.keys(allCategories).forEach(categoryKey => {
+        const category = allCategories[categoryKey];
+        
+        const btn = document.createElement('button');
+        btn.className = 'category-filter-btn';
+        btn.setAttribute('data-category', categoryKey);
+        btn.setAttribute('aria-pressed', 'false');
+        btn.innerHTML = `${category.icon} <span class="hide-mobile">${category.name}</span><span class="show-mobile">${category.name}</span>`;
+        
+        filterButtonsContainer.appendChild(btn);
+    });
+    
+    // Réattacher les événements à TOUS les boutons
+    const allCategoryButtons = filterButtonsContainer.querySelectorAll('.category-filter-btn');
+    allCategoryButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const category = this.getAttribute('data-category');
+            filterByCategory(category);
+            updateActiveFilter(allCategoryButtons, this);
+        });
+    });
+    
+    console.log(`✅ ${Object.keys(allCategories).length} filtres de catégories mis à jour`);
+}
+
+function forceUpdateCategoriesDisplay() {
+    console.log('🔄 Mise à jour forcée des catégories dans l\'interface...');
+    
+    // Recharger les catégories
+    loadCategoriesFromAdmin();
+    
+    // Mettre à jour les filtres
+    updateCategoryFilters();
+    
+    // Réafficher les produits pour appliquer les nouveaux noms
+    displayProductsByCategory();
+    displayAllProducts();
+    
+    console.log('✅ Interface boutique mise à jour avec les nouvelles catégories');
+}
 /* ==========================================
    CHARGEMENT DEPUIS L'INTERFACE ADMIN
    ========================================== */
@@ -227,7 +365,7 @@ function showEmptyStoreMessage() {
             <div style="background: rgba(74, 144, 226, 0.2); padding: 1rem; border-radius: 10px; margin-top: 1.5rem;">
                 <p style="color: white; margin: 0; font-size: 0.9rem;">
                     💡 <strong>Pour les administrateurs :</strong><br>
-                    Utilisez l'interface d'administration pour ajouter vos produits
+                    Utilisez l'interface d'administration pour ajouter vos produits et catégories
                 </p>
             </div>
         </div>
@@ -315,7 +453,7 @@ function displayProducts(containerId, products) {
 }
 
 /* ==========================================
-   CRÉATION DE CARTE PRODUIT
+   CRÉATION DE CARTE PRODUIT (avec catégories dynamiques)
    ========================================== */
 
 function createProductCard(product) {
@@ -531,7 +669,7 @@ function populateProductModal(product) {
         if (discountEl) discountEl.style.display = 'none';
     }
     
-    // Catégorie
+    // Catégorie (avec catégories dynamiques)
     const categoryBadge = document.getElementById('productCategoryBadge');
     if (categoryBadge) {
         categoryBadge.textContent = `${getCategoryIcon(product.category)} ${getCategoryName(product.category)}`;
@@ -792,20 +930,11 @@ function closeProductDetails() {
 }
 
 /* ==========================================
-   FONCTIONS DE FILTRAGE ET RECHERCHE
+   FONCTIONS DE FILTRAGE ET RECHERCHE (avec catégories dynamiques)
    ========================================== */
 
 function initializeFilters() {
-    // Filtres de catégorie
-    const categoryButtons = document.querySelectorAll('.category-filter-btn');
-    categoryButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const category = this.getAttribute('data-category');
-            filterByCategory(category);
-            updateActiveFilter(categoryButtons, this);
-        });
-    });
+    // Filtres de catégorie (déjà mis à jour par updateCategoryFilters)
     
     // Filtres d'affichage
     const displayButtons = document.querySelectorAll('.filter-btn[data-type="display"]');
@@ -856,7 +985,8 @@ function performSearch(searchTerm) {
         filteredProducts = allProducts.filter(product => 
             product.name.toLowerCase().includes(term) ||
             product.description.toLowerCase().includes(term) ||
-            (product.full_description && product.full_description.toLowerCase().includes(term))
+            (product.full_description && product.full_description.toLowerCase().includes(term)) ||
+            getCategoryName(product.category).toLowerCase().includes(term)
         );
     }
     
@@ -871,11 +1001,21 @@ function clearAllFilters() {
     // Réinitialiser les boutons actifs
     document.querySelectorAll('.filter-btn, .category-filter-btn').forEach(btn => {
         btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
     });
     
     // Activer le bouton "Tous"
-    document.querySelector('[data-category="all"]')?.classList.add('active');
-    document.querySelector('[data-filter="all"]')?.classList.add('active');
+    const allCategoryBtn = document.querySelector('[data-category="all"]');
+    if (allCategoryBtn) {
+        allCategoryBtn.classList.add('active');
+        allCategoryBtn.setAttribute('aria-pressed', 'true');
+    }
+    
+    const allDisplayBtn = document.querySelector('[data-filter="all"]');
+    if (allDisplayBtn) {
+        allDisplayBtn.classList.add('active');
+        allDisplayBtn.setAttribute('aria-pressed', 'true');
+    }
     
     // Vider la recherche
     const searchInput = document.getElementById('searchInput');
@@ -888,12 +1028,16 @@ function clearAllFilters() {
 }
 
 /* ==========================================
-   SYNCHRONISATION AVEC ADMIN
+   SYNCHRONISATION AVEC ADMIN (avec catégories)
    ========================================== */
 
 function refreshProductsFromAdmin() {
-    console.log('🔄 Actualisation des produits depuis l\'interface admin...');
+    console.log('🔄 Actualisation des produits et catégories depuis l\'interface admin...');
     
+    // Recharger les catégories
+    loadCategoriesFromAdmin();
+    
+    // Recharger les produits
     const newProducts = loadProductsFromAdmin();
     if (newProducts && newProducts.length > 0) {
         allProducts = newProducts;
@@ -903,8 +1047,8 @@ function refreshProductsFromAdmin() {
         displayAllProducts();
         updateResultsCount();
         
-        showNotification('Produits actualisés !', 'success');
-        console.log('✅ Produits actualisés avec succès');
+        showNotification('Produits et catégories actualisés !', 'success');
+        console.log('✅ Produits et catégories actualisés avec succès');
     } else {
         console.log('❌ Aucun nouveau produit trouvé lors de l\'actualisation');
         showNotification('Aucun produit trouvé dans l\'admin', 'warning');
@@ -917,10 +1061,23 @@ function syncWithAdminData() {
     
     if (!lastSync || (now - parseInt(lastSync)) > 30000) {
         const adminData = localStorage.getItem('laglue_products');
+        const adminCategories = localStorage.getItem('laglue_categories');
         const currentData = JSON.stringify(allProducts);
+        const currentCategories = JSON.stringify(allCategories);
+        
+        let shouldRefresh = false;
         
         if (adminData && adminData !== currentData) {
-            console.log('🔄 Nouvelles données détectées, synchronisation...');
+            console.log('🔄 Nouveaux produits détectés, synchronisation...');
+            shouldRefresh = true;
+        }
+        
+        if (adminCategories && adminCategories !== currentCategories) {
+            console.log('🔄 Nouvelles catégories détectées, synchronisation...');
+            shouldRefresh = true;
+        }
+        
+        if (shouldRefresh) {
             refreshProductsFromAdmin();
         }
         
@@ -933,6 +1090,13 @@ function setupAdminDataListener() {
         if (e.key === 'laglue_products') {
             console.log('📡 Changement détecté dans les données produits');
             refreshProductsFromAdmin();
+        } else if (e.key === 'laglue_categories') {
+            console.log('📡 Changement détecté dans les catégories');
+            forceUpdateCategoriesDisplay(); // ← CETTE LIGNE EST NOUVELLE
+        } else if (e.key === 'laglue_main_data') {
+            console.log('📡 Changement détecté dans les données principales');
+            refreshProductsFromAdmin();
+            forceUpdateCategoriesDisplay(); // ← CETTE LIGNE EST NOUVELLE
         }
     });
     
@@ -940,16 +1104,25 @@ function setupAdminDataListener() {
 }
 
 /* ==========================================
-   FONCTIONS UTILITAIRES
+   FONCTIONS UTILITAIRES (avec catégories dynamiques)
    ========================================== */
 
 function updateActiveFilter(buttons, activeButton) {
-    buttons.forEach(btn => btn.classList.remove('active'));
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
+    });
     activeButton.classList.add('active');
+    activeButton.setAttribute('aria-pressed', 'true');
 }
 
 function getCategoryIcon(category) {
-    const icons = {
+    if (allCategories[category] && allCategories[category].icon) {
+        return allCategories[category].icon;
+    }
+    
+    // Fallback pour les icônes par défaut
+    const defaultIcons = {
         'smartphones': '📱',
         'ordinateurs': '💻',
         'tablettes': '📋',
@@ -965,11 +1138,17 @@ function getCategoryIcon(category) {
         'sport': '⚽',
         'autre': '📦'
     };
-    return icons[category] || '📦';
+    
+    return defaultIcons[category] || '📦';
 }
 
 function getCategoryName(category) {
-    const names = {
+    if (allCategories[category] && allCategories[category].name) {
+        return allCategories[category].name;
+    }
+    
+    // Fallback pour les noms par défaut
+    const defaultNames = {
         'smartphones': 'Smartphones',
         'ordinateurs': 'Ordinateurs',
         'tablettes': 'Tablettes',
@@ -985,7 +1164,8 @@ function getCategoryName(category) {
         'sport': 'Sport & Loisirs',
         'autre': 'Autre'
     };
-    return names[category] || 'Autre';
+    
+    return defaultNames[category] || 'Catégorie inconnue';
 }
 
 function formatPrice(price) {
@@ -1109,7 +1289,7 @@ document.addEventListener('error', function(e) {
    ========================================== */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Démarrage du système de produits (ADMIN UNIQUEMENT)...');
+    console.log('🚀 Démarrage du système de produits avec catégories dynamiques...');
     
     setTimeout(() => {
         initializeProducts();
@@ -1132,9 +1312,11 @@ window.debugProducts = {
     refresh: refreshProductsFromAdmin,
     sync: syncWithAdminData,
     getProducts: () => allProducts,
+    getCategories: () => allCategories,
     getFiltered: () => filteredProducts,
     getCurrentProduct: () => currentProduct,
-    getImages: () => productImages
+    getImages: () => productImages,
+    updateFilters: updateCategoryFilters
 };
 
-console.log('📁 products.js (VERSION COMPLÈTE) chargé avec succès');
+console.log('📁 products.js (VERSION AVEC CATÉGORIES DYNAMIQUES) chargé avec succès');

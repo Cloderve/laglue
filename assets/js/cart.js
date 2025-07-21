@@ -383,63 +383,227 @@ function createCartTotalElement(totals) {
 }
 
 function createCartFooterElement() {
-    // Vérifier si l'utilisateur est authentifié et a une adresse
     const isAuthenticated = window.authUser ? window.authUser.isAuthenticated() : false;
     const userProfile = window.authUser ? window.authUser.getUserProfile() : null;
-    const hasAddress = userProfile && userProfile.address && userProfile.address.trim();
     
-    let infoSection = '';
+    let formSection = '';
     
     if (!isAuthenticated) {
-        // Utilisateur non connecté - Info simple
-        infoSection = `
-            <div style="background: #e3f2fd; border: 1px solid #2196F3; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: #1565C0;">
-                <div style="font-weight: bold; margin-bottom: 0.5rem;">💡 Conseil</div>
-                <div style="font-size: 0.9rem;">
-                    Connectez-vous et ajoutez votre adresse pour des commandes plus rapides !
-                    <button onclick="showSection('profile'); closeCart();" style="background: var(--primary-blue); color: white; border: none; padding: 4px 8px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; margin-left: 0.5rem;">
-                        Se connecter
-                    </button>
-                </div>
-            </div>
-        `;
-    } else if (!hasAddress) {
-        // Utilisateur connecté sans adresse
-        infoSection = `
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: #856404;">
-                <div style="font-weight: bold; margin-bottom: 0.5rem;">📍 Adresse de livraison</div>
-                <div style="font-size: 0.9rem;">
-                    Connecté: <strong>${window.authUser.getCurrentUser()}</strong><br>
-                    <button onclick="showSection('profile'); closeCart();" style="background: var(--primary-blue); color: white; border: none; padding: 4px 8px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; margin-top: 0.5rem;">
-                        Ajouter mon adresse
-                    </button>
+        // Formulaire pour client non connecté
+        formSection = `
+            <div style="background: #f8f9fa; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem;">
+                <h4 style="color: #333; margin-bottom: 1rem; text-align: center;">📝 Informations de livraison</h4>
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: #555;">Nom complet *</label>
+                        <input type="text" id="orderName" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="Votre nom complet">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: #555;">WhatsApp *</label>
+                        <input type="tel" id="orderWhatsApp" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="+237 6XX XXX XXX">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: #555;">Adresse de livraison *</label>
+                        <textarea id="orderAddress" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; min-height: 60px;" placeholder="Adresse complète pour la livraison"></textarea>
+                    </div>
                 </div>
             </div>
         `;
     } else {
-        // Utilisateur connecté avec adresse
-        infoSection = `
-            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: #155724;">
-                <div style="font-weight: bold; margin-bottom: 0.5rem;">✅ Prêt pour la commande</div>
-                <div style="font-size: 0.9rem;">
-                    <strong>${userProfile.name || 'Client'}</strong><br>
-                    📍 ${userProfile.address}<br>
-                    📱 ${window.authUser.getCurrentUser()}
+        // Formulaire pré-rempli pour client connecté
+        const name = userProfile?.name || '';
+        const address = userProfile?.address || '';
+        const whatsapp = window.authUser.getCurrentUser();
+        
+        formSection = `
+            <div style="background: #d4edda; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid #c3e6cb;">
+                <h4 style="color: #155724; margin-bottom: 1rem; text-align: center;">✅ Connecté - Informations pré-remplies</h4>
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: #155724;">Nom complet *</label>
+                        <input type="text" id="orderName" required value="${name}" style="width: 100%; padding: 10px; border: 2px solid #28a745; border-radius: 8px; font-size: 1rem; background: rgba(40,167,69,0.1);">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: #155724;">WhatsApp *</label>
+                        <input type="tel" id="orderWhatsApp" required value="${whatsapp}" readonly style="width: 100%; padding: 10px; border: 2px solid #28a745; border-radius: 8px; font-size: 1rem; background: rgba(40,167,69,0.1);">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: #155724;">Adresse de livraison *</label>
+                        <textarea id="orderAddress" required style="width: 100%; padding: 10px; border: 2px solid #28a745; border-radius: 8px; font-size: 1rem; min-height: 60px; background: rgba(40,167,69,0.1);">${address}</textarea>
+                    </div>
                 </div>
             </div>
         `;
     }
     
-    // TOUJOURS retourner le bouton de commande
     return `
-        ${infoSection}
-        <button class="checkout-btn" onclick="sendOrderToWhatsApp()">
+        ${formSection}
+        <button class="checkout-btn" onclick="processOrderWithDetails()">
             <span class="btn-icon">📱</span>
-            Commander via WhatsApp
+            Finaliser la commande
         </button>
     `;
 }
 
+function processOrderWithDetails() {
+    console.log('📝 Traitement de la commande avec détails...');
+    
+    // Vérifier le panier
+    if (!cart || cart.length === 0) {
+        showNotification('Votre panier est vide !', 'warning');
+        return;
+    }
+    
+    // Récupérer les informations du formulaire
+    const name = document.getElementById('orderName')?.value?.trim();
+    const whatsapp = document.getElementById('orderWhatsApp')?.value?.trim();
+    const address = document.getElementById('orderAddress')?.value?.trim();
+    
+    // Validation
+    if (!name || !whatsapp || !address) {
+        showNotification('Veuillez remplir tous les champs obligatoires !', 'error');
+        return;
+    }
+    
+    // Valider le numéro WhatsApp
+    if (!isValidWhatsAppNumber(whatsapp)) {
+        showNotification('Numéro WhatsApp invalide !', 'error');
+        return;
+    }
+    
+    try {
+        const totals = calculateCartTotals();
+        const orderCode = generateSecureOrderCode();
+        
+        // Créer l'objet commande complet
+        const orderData = {
+            code: orderCode,
+            timestamp: new Date().toISOString(),
+            date: new Date().toLocaleDateString('fr-FR'),
+            time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+            customer: {
+                name: name,
+                whatsapp: cleanWhatsAppNumber(whatsapp),
+                address: address,
+                isAuthenticated: window.authUser ? window.authUser.isAuthenticated() : false
+            },
+            items: cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                total: item.price * item.quantity
+            })),
+            totals: {
+                subtotal: totals.subtotal,
+                deliveryFee: totals.deliveryFee,
+                total: totals.total,
+                itemsCount: totals.count
+            },
+            status: 'pending'
+        };
+        
+        // Enregistrer la commande côté admin
+        saveOrderToAdmin(orderData);
+        
+        // Générer le message WhatsApp
+        const whatsappMessage = generateOrderWhatsAppMessage(orderData);
+        
+        // Envoyer vers WhatsApp
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        const whatsappURL = `https://wa.me/237655912990?text=${encodedMessage}`;
+        
+        window.open(whatsappURL, '_blank');
+        
+        // Sauvegarder dans l'historique utilisateur si connecté
+        if (window.authUser && window.authUser.isAuthenticated()) {
+            window.authUser.addOrderToHistory(orderData);
+        }
+        
+        showNotification('Commande envoyée avec succès !', 'success');
+        
+        // Proposer de vider le panier
+        setTimeout(() => {
+            if (confirm('Commande envoyée !\n\nVoulez-vous vider votre panier ?')) {
+                cart = [];
+                updateCartUI();
+                saveCartToStorage();
+                closeCart();
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('❌ Erreur traitement commande:', error);
+        showNotification('Erreur lors du traitement: ' + error.message, 'error');
+    }
+}
+
+function saveOrderToAdmin(orderData) {
+    try {
+        // Récupérer les commandes existantes
+        let adminOrders = JSON.parse(localStorage.getItem('laglue_admin_orders') || '[]');
+        
+        // Ajouter la nouvelle commande en première position
+        adminOrders.unshift(orderData);
+        
+        // Limiter à 1000 commandes max
+        if (adminOrders.length > 1000) {
+            adminOrders = adminOrders.slice(0, 1000);
+        }
+        
+        // Sauvegarder
+        localStorage.setItem('laglue_admin_orders', JSON.stringify(adminOrders));
+        
+        console.log('✅ Commande sauvegardée côté admin:', orderData.code);
+        
+    } catch (error) {
+        console.error('❌ Erreur sauvegarde commande admin:', error);
+    }
+}
+
+function generateOrderWhatsAppMessage(orderData) {
+    let message = `🛒 *Nouvelle commande - La Glue !*\n\n`;
+    message += `📄 *CODE: ${orderData.code}*\n`;
+    message += `📅 ${orderData.date} à ${orderData.time}\n\n`;
+    
+    // Informations client
+    message += `👤 *CLIENT:*\n`;
+    message += `• Nom: ${orderData.customer.name}\n`;
+    message += `• WhatsApp: ${orderData.customer.whatsapp}\n`;
+    message += `• Adresse: ${orderData.customer.address}\n\n`;
+    
+    // Produits
+    message += `📦 *PRODUITS:*\n`;
+    orderData.items.forEach((item, index) => {
+        message += `${index + 1}. ${item.name}\n`;
+        message += `   ${formatPrice(item.price)} x ${item.quantity} = ${formatPrice(item.total)}\n\n`;
+    });
+    
+    // Total
+    message += `💰 *TOTAL: ${formatPrice(orderData.totals.total)}*\n\n`;
+    message += `⚠️ Code requis pour toute réclamation\n`;
+    message += `La Glue ! - Votre boutique de confiance`;
+    
+    return message;
+}
+
+function isValidWhatsAppNumber(number) {
+    const cleaned = number.replace(/[\s\-\+\(\)]/g, '');
+    const cameroonPatterns = [
+        /^237[6-9]\d{8}$/,
+        /^[6-9]\d{8}$/,
+        /^\+237[6-9]\d{8}$/
+    ];
+    return cameroonPatterns.some(pattern => pattern.test(cleaned));
+}
+
+function cleanWhatsAppNumber(number) {
+    let cleaned = number.replace(/[\s\-\+\(\)]/g, '');
+    if (cleaned.length === 9 && /^[6-9]/.test(cleaned)) {
+        cleaned = '237' + cleaned;
+    }
+    return cleaned;
+}
 /* ==========================================
    GESTION DU MODAL
    ========================================== */
