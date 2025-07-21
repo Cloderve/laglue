@@ -45,25 +45,21 @@
                 <ul class="nav-menu" id="navMenu" role="menubar">
                     <li role="none">
                         <a href="#" onclick="showSection('home')" class="nav-link active" role="menuitem" aria-label="Accueil">
-                            <!--<span class="hide-mobile"></span> -->
                            🏠 Accueil
                         </a>
                     </li>
                     <li role="none">
                         <a href="#" onclick="showSection('products')" class="nav-link" role="menuitem" aria-label="Produits">
-                            <!--<span class="hide-mobile"></span> -->
                              🛍️ Produits
                         </a>
                     </li>
                     <li role="none">
                         <a href="#" onclick="showSection('contact')" class="nav-link" role="menuitem" aria-label="Contact">
-                            <!--<span class="hide-mobile"></span> -->
                            📞 Contact
                         </a>
                     </li>
                     <li role="none">
                         <a href="#" onclick="showSection('profile')" class="nav-link" role="menuitem" aria-label="Mon profil">
-                            <!--<span class="hide-mobile"></span> -->
                             👤 Profil
                         </a>
                     </li>
@@ -135,30 +131,16 @@
             <section id="products" class="section" aria-labelledby="products-title">
                 <h1 id="products-title" class="section-title">Nos Produits</h1>
 
-                <!-- Filtres responsive -->
+                <!-- Filtres responsive avec catégories dynamiques -->
                 <div class="filters" role="region" aria-label="Filtres de produits">
-                    <!-- Filtres par catégorie -->
+                    <!-- Filtres par catégorie (sera mis à jour dynamiquement) -->
                     <div class="filter-group">
                         <h3 class="filter-title">Catégories</h3>
                         <div class="filter-buttons" role="group" aria-label="Filtrer par catégorie">
                             <button class="category-filter-btn active" data-category="all" aria-pressed="true">
                                 <span class="show-mobile">📦</span> Tous
                             </button>
-                            <button class="category-filter-btn" data-category="smartphones" aria-pressed="false">
-                                📱 <span class="hide-mobile">Smartphones</span><span class="show-mobile">Phones</span>
-                            </button>
-                            <button class="category-filter-btn" data-category="ordinateurs" aria-pressed="false">
-                                💻 <span class="hide-mobile">Ordinateurs</span><span class="show-mobile">PC</span>
-                            </button>
-                            <button class="category-filter-btn" data-category="audio" aria-pressed="false">
-                                🎧 Audio
-                            </button>
-                            <button class="category-filter-btn" data-category="electromenager" aria-pressed="false">
-                                🏠 <span class="hide-mobile">Électroménager</span><span class="show-mobile">Maison</span>
-                            </button>
-                            <button class="category-filter-btn" data-category="alimentation" aria-pressed="false">
-                                🍽️ <span class="hide-mobile">Alimentation</span><span class="show-mobile">Food</span>
-                            </button>
+                            <!-- Les autres boutons de catégorie seront ajoutés dynamiquement par JavaScript -->
                         </div>
                     </div>
 
@@ -566,48 +548,21 @@
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     // Mettre à jour aria-pressed
-                    filterButtons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
-                    this.setAttribute('aria-pressed', 'true');
-                });
-            });
-            
-            // Gestion du zoom des images sur mobile
-            const productImages = document.querySelectorAll('.product-image');
-            productImages.forEach(img => {
-                img.addEventListener('touchend', function(e) {
-                    if (e.touches.length === 0) {
-                        // Zoom simple au tap
-                        this.style.transform = this.style.transform === 'scale(1.1)' ? 'scale(1)' : 'scale(1.1)';
+                    const parentGroup = this.closest('.filter-buttons');
+                    if (parentGroup) {
+                        parentGroup.querySelectorAll('button').forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+                        this.setAttribute('aria-pressed', 'true');
                     }
                 });
             });
             
-            // Amélioration de la navigation au clavier dans le panier
-            const cartModal = document.getElementById('cartModal');
-            if (cartModal) {
-                cartModal.addEventListener('keydown', function(e) {
-                    if (e.key === 'Tab') {
-                        // Piéger le focus dans le modal
-                        const focusableElements = this.querySelectorAll(
-                            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                        );
-                        const firstElement = focusableElements[0];
-                        const lastElement = focusableElements[focusableElements.length - 1];
-                        
-                        if (e.shiftKey) {
-                            if (document.activeElement === firstElement) {
-                                lastElement.focus();
-                                e.preventDefault();
-                            }
-                        } else {
-                            if (document.activeElement === lastElement) {
-                                firstElement.focus();
-                                e.preventDefault();
-                            }
-                        }
-                    }
-                });
-            }
+            // Gestion des erreurs d'images avec fallback
+            document.addEventListener('error', function(e) {
+                if (e.target.tagName === 'IMG' && e.target.src.includes('assets/images/products/')) {
+                    console.log('📷 Image non trouvée, utilisation du placeholder:', e.target.src);
+                    e.target.src = 'https://via.placeholder.com/300x200/667eea/white?text=Image+Non+Disponible';
+                }
+            }, true);
             
             // Optimisation des performances sur mobile
             if (window.innerWidth <= 768) {
@@ -673,10 +628,10 @@
                     if (imageGallery) {
                         if (diffX > 0) {
                             // Swipe gauche - image suivante
-                            nextImage();
+                            if (typeof nextImage === 'function') nextImage();
                         } else {
                             // Swipe droite - image précédente
-                            previousImage();
+                            if (typeof previousImage === 'function') previousImage();
                         }
                     }
                 }
@@ -685,7 +640,7 @@
                 startY = 0;
             });
             
-            console.log('✅ Améliorations responsive chargées');
+            console.log('✅ Améliorations responsive chargées avec support catégories dynamiques');
         });
         
         // Fonction utilitaire pour détecter le type d'appareil
@@ -721,6 +676,32 @@
         if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
             document.body.classList.add('low-performance');
         }
+
+        // Fonction debounce pour les performances
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Notification de debugging pour les catégories
+        window.addEventListener('load', function() {
+            // Vérifier si les catégories sont bien chargées
+            setTimeout(() => {
+                const categoryButtons = document.querySelectorAll('.category-filter-btn');
+                console.log(`📊 Interface client: ${categoryButtons.length} boutons de catégorie détectés`);
+                
+                if (categoryButtons.length <= 1) {
+                    console.log('⚠️ Seulement le bouton "Tous" détecté. Les catégories dynamiques vont se charger...');
+                }
+            }, 2000);
+        });
     </script>
 </body>
 </html>

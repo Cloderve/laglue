@@ -202,14 +202,14 @@
             border-radius: 20px;
         }
 
-        .products-grid {
+        .products-grid, .categories-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
 
-        .product-card-admin {
+        .product-card-admin, .category-card-admin {
             background: white;
             border-radius: 15px;
             padding: 1.5rem;
@@ -218,7 +218,7 @@
             position: relative;
         }
 
-        .product-card-admin:hover {
+        .product-card-admin:hover, .category-card-admin:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
@@ -231,7 +231,7 @@
             margin-bottom: 1rem;
         }
 
-        .product-info h3 {
+        .product-info h3, .category-info h3 {
             color: #333;
             margin-bottom: 0.5rem;
             font-size: 1.2rem;
@@ -244,7 +244,7 @@
             margin-bottom: 1rem;
         }
 
-        .product-actions {
+        .product-actions, .category-actions {
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
@@ -465,7 +465,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Styles pour gestion images locales */
         .image-path-display {
             font-size: 0.75rem;
             color: #28a745;
@@ -537,6 +536,103 @@
             font-size: 0.85rem;
         }
 
+        /* Styles pour les catégories */
+        .category-icon-display {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .category-info p {
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .category-form-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 2px solid #e9ecef;
+        }
+
+        .category-form-section h3 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .emoji-option {
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .emoji-option:hover {
+            background: #f0f0f0;
+            transform: scale(1.2);
+        }
+
+        .emoji-option.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .category-preview {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .category-preview-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-preview-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-preview-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .categories-used {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #856404;
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -546,12 +642,16 @@
                 flex-direction: column;
             }
             
-            .products-grid {
+            .products-grid, .categories-grid {
                 grid-template-columns: 1fr;
             }
 
             .image-upload-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .emoji-picker {
+                grid-template-columns: repeat(8, 1fr);
             }
         }
     </style>
@@ -579,12 +679,14 @@
         <div class="admin-container">
             <div class="admin-header">
                 <h1>🛍️ La Glue ! - Administration</h1>
-                <p>Interface de gestion des produits et statistiques</p>
+                <p>Interface de gestion des produits, catégories et statistiques</p>
             </div>
 
             <!-- Onglets -->
             <div class="admin-tabs">
                 <button class="tab-btn active" onclick="showTab('dashboard')">📊 Tableau de bord</button>
+                <button class="tab-btn" onclick="showTab('categories')">🏷️ Catégories</button>
+                <button class="tab-btn" onclick="showTab('orders')">📋 Commandes</button>
                 <button class="tab-btn" onclick="showTab('products')">📦 Produits</button>
                 <button class="tab-btn" onclick="showTab('add-product')">➕ Ajouter produit</button>
                 <button class="tab-btn" onclick="showTab('settings')">⚙️ Paramètres</button>
@@ -594,6 +696,10 @@
             <div id="dashboard" class="tab-content active">
                 <h2>📊 Tableau de bord</h2>
                 <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCategories">0</div>
+                        <div class="stat-label">Catégories total</div>
+                    </div>
                     <div class="stat-card">
                         <div class="stat-number" id="totalProducts">0</div>
                         <div class="stat-label">Produits total</div>
@@ -606,10 +712,6 @@
                         <div class="stat-number" id="lowStockCount">0</div>
                         <div class="stat-label">Stock faible</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="categoriesCount">0</div>
-                        <div class="stat-label">Catégories</div>
-                    </div>
                 </div>
                 
                 <h3>📈 Aperçu récent</h3>
@@ -620,6 +722,144 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Gestion des catégories -->
+            <div id="categories" class="tab-content">
+                <h2>🏷️ Gestion des catégories</h2>
+
+                <!-- Formulaire d'ajout/modification de catégorie -->
+                <div class="category-form-section">
+                    <h3 id="categoryFormTitle">➕ Ajouter une nouvelle catégorie</h3>
+                    
+                    <form id="categoryForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="categoryName">Nom de la catégorie *</label>
+                                <input type="text" id="categoryName" required placeholder="Ex: Smartphones">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="categoryKey">Clé technique *</label>
+                                <input type="text" id="categoryKey" required placeholder="Ex: smartphones">
+                                <div class="features-help">Utilisée dans le code (sans espaces, minuscules)</div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="categoryDescription">Description</label>
+                                <textarea id="categoryDescription" placeholder="Description de la catégorie..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Icône/Emoji *</label>
+                                <input type="text" id="categoryIcon" required placeholder="📱" readonly>
+                                <button type="button" onclick="toggleEmojiPicker()" class="btn btn-small" style="margin-top: 0.5rem;">
+                                    🎨 Choisir un emoji
+                                </button>
+                                
+                                <div id="emojiPicker" class="emoji-picker" style="display: none;">
+                                    <div class="emoji-option" onclick="selectEmoji('📱')">📱</div>
+                                    <div class="emoji-option" onclick="selectEmoji('💻')">💻</div>
+                                    <div class="emoji-option" onclick="selectEmoji('📋')">📋</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎧')">🎧</div>
+                                    <div class="emoji-option" onclick="selectEmoji('⌚')">⌚</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🏠')">🏠</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🍽️')">🍽️</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🏡')">🏡</div>
+                                    <div class="emoji-option" onclick="selectEmoji('👕')">👕</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🧴')">🧴</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎮')">🎮</div>
+                                    <div class="emoji-option" onclick="selectEmoji('📷')">📷</div>
+                                    <div class="emoji-option" onclick="selectEmoji('⚽')">⚽</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🚗')">🚗</div>
+                                    <div class="emoji-option" onclick="selectEmoji('📚')">📚</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎵')">🎵</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎨')">🎨</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🔧')">🔧</div>
+                                    <div class="emoji-option" onclick="selectEmoji('💎')">💎</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🌟')">🌟</div>
+                                    <div class="emoji-option" onclick="selectEmoji('❤️')">❤️</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎁')">🎁</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🔥')">🔥</div>
+                                    <div class="emoji-option" onclick="selectEmoji('💰')">💰</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎯')">🎯</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🚀')">🚀</div>
+                                    <div class="emoji-option" onclick="selectEmoji('⭐')">⭐</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🌈')">🌈</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎊')">🎊</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🏆')">🏆</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎪')">🎪</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎭')">🎭</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎨')">🎨</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🔮')">🔮</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎳')">🎳</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎲')">🎲</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎯')">🎯</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎪')">🎪</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎨')">🎨</div>
+                                    <div class="emoji-option" onclick="selectEmoji('🎭')">🎭</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Aperçu de la catégorie</label>
+                                <div class="category-preview" id="categoryPreview">
+                                    <div class="category-preview-icon" id="previewIcon">📦</div>
+                                    <div class="category-preview-name" id="previewName">Nom de la catégorie</div>
+                                    <div class="category-preview-desc" id="previewDesc">Description de la catégorie</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button type="button" class="btn btn-secondary" onclick="clearCategoryForm()" style="margin-right: 1rem;">
+                                🗑️ Effacer
+                            </button>
+                            <button type="submit" class="btn">
+                                💾 Enregistrer la catégorie
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Liste des catégories existantes -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="categorySearch" placeholder="Rechercher une catégorie...">
+                    <button class="search-btn" onclick="searchCategories()">🔍</button>
+                </div>
+
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Les catégories seront chargées ici -->
+                </div>
+            </div>
+
+            <!-- Gestion des commandes -->
+<div id="orders" class="tab-content">
+    <h2>📋 Gestion des commandes</h2>
+    
+    <div class="search-bar">
+        <input type="text" class="search-input" id="orderSearch" placeholder="Rechercher par code, nom client, numéro...">
+        <button class="search-btn" onclick="searchOrders()">🔍</button>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-number" id="totalOrders">0</div>
+            <div class="stat-label">Commandes total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="todayOrders">0</div>
+            <div class="stat-label">Aujourd'hui</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="totalRevenue">0</div>
+            <div class="stat-label">Chiffre d'affaires</div>
+        </div>
+    </div>
+
+    <div id="ordersGrid">
+        <!-- Les commandes seront chargées ici -->
+    </div>
+</div>
 
             <!-- Gestion des produits -->
             <div id="products" class="tab-content">
@@ -651,19 +891,7 @@
                             <label for="productCategory">Catégorie *</label>
                             <select id="productCategory" required>
                                 <option value="">Sélectionner...</option>
-                                <option value="smartphones">📱 Smartphones</option>
-                                <option value="ordinateurs">💻 Ordinateurs</option>
-                                <option value="tablettes">📋 Tablettes</option>
-                                <option value="audio">🎧 Audio</option>
-                                <option value="accessoires">⌚ Accessoires</option>
-                                <option value="electromenager">🏠 Électroménager</option>
-                                <option value="alimentation">🍽️ Alimentation</option>
-                                <option value="maison">🏡 Maison & Jardin</option>
-                                <option value="mode">👕 Mode & Style</option>
-                                <option value="beaute">🧴 Beauté & Santé</option>
-                                <option value="gaming">🎮 Gaming</option>
-                                <option value="photo">📷 Photo/Vidéo</option>
-                                <option value="sport">⚽ Sport & Loisirs</option>
+                                <!-- Options générées dynamiquement -->
                             </select>
                         </div>
                         
@@ -874,7 +1102,26 @@
         const DEFAULT_PASSWORD = 'LaGlue2024!'; // ⚠️ CHANGEZ IMMÉDIATEMENT !
         
         let currentEditingId = null;
+        let currentEditingCategoryKey = null;
         let productsData = [];
+        let categoriesData = {};
+
+        // Catégories par défaut
+        const DEFAULT_CATEGORIES = {
+            'smartphones': { name: 'Smartphones', icon: '📱', description: 'Téléphones intelligents de toutes marques' },
+            'ordinateurs': { name: 'Ordinateurs', icon: '💻', description: 'Ordinateurs portables et de bureau' },
+            'tablettes': { name: 'Tablettes', icon: '📋', description: 'Tablettes tactiles pour tous usages' },
+            'audio': { name: 'Audio', icon: '🎧', description: 'Écouteurs, enceintes et accessoires audio' },
+            'accessoires': { name: 'Accessoires', icon: '⌚', description: 'Montres connectées et accessoires tech' },
+            'electromenager': { name: 'Électroménager', icon: '🏠', description: 'Appareils électroménagers pour la maison' },
+            'alimentation': { name: 'Alimentation', icon: '🍽️', description: 'Produits alimentaires et boissons' },
+            'maison': { name: 'Maison & Jardin', icon: '🏡', description: 'Décoration, mobilier et jardinage' },
+            'mode': { name: 'Mode & Style', icon: '👕', description: 'Vêtements et accessoires de mode' },
+            'beaute': { name: 'Beauté & Santé', icon: '🧴', description: 'Produits de beauté et de bien-être' },
+            'gaming': { name: 'Gaming', icon: '🎮', description: 'Jeux vidéo et accessoires gaming' },
+            'photo': { name: 'Photo/Vidéo', icon: '📷', description: 'Appareils photo et matériel vidéo' },
+            'sport': { name: 'Sport & Loisirs', icon: '⚽', description: 'Équipements sportifs et loisirs' }
+        };
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -882,17 +1129,27 @@
         });
 
         function initializeAdmin() {
+            loadCategories();
             loadProducts();
-            
+            loadOrders();
+
             const savedPassword = localStorage.getItem(ADMIN_PASSWORD_KEY);
             if (!savedPassword) {
                 localStorage.setItem(ADMIN_PASSWORD_KEY, DEFAULT_PASSWORD);
             }
             
-            // Configuration du formulaire
-            const form = document.getElementById('productForm');
-            if (form) {
-                form.addEventListener('submit', function(e) {
+            // Configuration des formulaires
+            const categoryForm = document.getElementById('categoryForm');
+            if (categoryForm) {
+                categoryForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveCategory(e);
+                });
+            }
+            
+            const productForm = document.getElementById('productForm');
+            if (productForm) {
+                productForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     saveProduct(e);
                 });
@@ -902,8 +1159,14 @@
                 if (e.key === 'Enter') login();
             });
             
+            // Écouter les changements pour l'aperçu
+            document.getElementById('categoryName').addEventListener('input', updateCategoryPreview);
+            document.getElementById('categoryDescription').addEventListener('input', updateCategoryPreview);
+            document.getElementById('categoryIcon').addEventListener('input', updateCategoryPreview);
+            
             updateDashboard();
             setupImageInputListeners();
+            updateProductCategorySelect();
         }
 
         function login() {
@@ -914,6 +1177,7 @@
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('adminInterface').style.display = 'block';
                 showNotification('Connexion réussie ! Bienvenue administrateur.', 'success');
+                loadCategoriesDisplay();
                 loadProductsDisplay();
             } else {
                 showNotification('Mot de passe incorrect !', 'error');
@@ -927,149 +1191,305 @@
             document.getElementById('adminPassword').value = '';
             showNotification('Déconnexion réussie', 'success');
         }
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+    
+    if (tabName === 'categories') {
+        loadCategoriesDisplay();
+    } else if (tabName === 'products') {
+        loadProductsDisplay();
+    } else if (tabName === 'orders') {
+        loadOrders();
+        loadOrdersDisplay();
+        updateOrdersStats();
+    } else if (tabName === 'dashboard') {
+        updateDashboard();
+    }
+}
+        // ==========================================
+        // GESTION DES CATÉGORIES
+        // ==========================================
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (tabName === 'products') {
-                loadProductsDisplay();
-            } else if (tabName === 'dashboard') {
-                updateDashboard();
+        function loadCategories() {
+            const savedCategories = localStorage.getItem('laglue_categories');
+            if (savedCategories) {
+                categoriesData = JSON.parse(savedCategories);
+            } else {
+                categoriesData = { ...DEFAULT_CATEGORIES };
+                saveCategoriesToStorage();
             }
         }
 
-        // Gestion des aperçus d'images locales
-        function showLocalImagePreview(imageNumber) {
-            const imageInput = document.getElementById(`productImage${imageNumber}`);
-            const previewContainer = document.getElementById(`imagePreview${imageNumber}`);
-            const pathDisplay = document.getElementById(`imagePath${imageNumber}`);
-            const fileName = imageInput.value.trim();
+        function saveCategoriesToStorage() {
+            localStorage.setItem('laglue_categories', JSON.stringify(categoriesData));
+            // Aussi sauvegarder dans le format principal pour le site
+            const mainSiteData = {
+                categories: categoriesData,
+                products: productsData,
+                store_info: {
+                    name: "La Glue !",
+                    contact: { whatsapp: "237655912990" }
+                }
+            };
+            localStorage.setItem('laglue_main_data', JSON.stringify(mainSiteData));
+        }
+
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function selectEmoji(emoji) {
+            document.getElementById('categoryIcon').value = emoji;
+            document.getElementById('emojiPicker').style.display = 'none';
+            updateCategoryPreview();
             
-            if (!fileName) {
-                showNotification('Veuillez saisir un nom de fichier !', 'error');
+            // Marquer comme sélectionné
+            document.querySelectorAll('.emoji-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function updateCategoryPreview() {
+            const name = document.getElementById('categoryName').value || 'Nom de la catégorie';
+            const icon = document.getElementById('categoryIcon').value || '📦';
+            const description = document.getElementById('categoryDescription').value || 'Description de la catégorie';
+            
+            document.getElementById('previewIcon').textContent = icon;
+            document.getElementById('previewName').textContent = name;
+            document.getElementById('previewDesc').textContent = description;
+            
+            // Auto-générer la clé si elle est vide
+            const keyField = document.getElementById('categoryKey');
+            if (!keyField.value && name) {
+                keyField.value = name.toLowerCase()
+                    .replace(/[^a-z0-9\s]/g, '')
+                    .replace(/\s+/g, '_')
+                    .substring(0, 20);
+            }
+        }
+
+        function saveCategory(e) {
+            if (e) e.preventDefault();
+            
+            console.log('🏷️ Début de la sauvegarde de la catégorie...');
+            
+            try {
+                const name = document.getElementById('categoryName').value.trim();
+                const key = document.getElementById('categoryKey').value.trim();
+                const icon = document.getElementById('categoryIcon').value.trim();
+                const description = document.getElementById('categoryDescription').value.trim();
+                
+                // Validation des champs obligatoires
+                if (!name || !key || !icon) {
+                    showNotification('Nom, clé et icône sont obligatoires !', 'error');
+                    return;
+                }
+                
+                // Vérifier que la clé n'existe pas déjà (sauf si on modifie)
+                if (!currentEditingCategoryKey && categoriesData[key]) {
+                    showNotification('Cette clé existe déjà ! Utilisez une clé différente.', 'error');
+                    return;
+                }
+                
+                // Vérifier les produits qui utilisent cette catégorie (si modification)
+                if (currentEditingCategoryKey && currentEditingCategoryKey !== key) {
+                    const productsUsingCategory = productsData.filter(p => p.category === currentEditingCategoryKey);
+                    if (productsUsingCategory.length > 0) {
+                        if (!confirm(`Cette catégorie est utilisée par ${productsUsingCategory.length} produit(s). Voulez-vous continuer ? Les produits seront mis à jour avec la nouvelle clé.`)) {
+                            return;
+                        }
+                        
+                        // Mettre à jour les produits avec la nouvelle clé
+                        productsData.forEach(product => {
+                            if (product.category === currentEditingCategoryKey) {
+                                product.category = key;
+                            }
+                        });
+                        saveProductsToStorage();
+                    }
+                    
+                    // Supprimer l'ancienne catégorie
+                    delete categoriesData[currentEditingCategoryKey];
+                }
+                
+                // Sauvegarder la catégorie
+                categoriesData[key] = {
+                    name: name,
+                    icon: icon,
+                    description: description || `Catégorie ${name}`
+                };
+                
+                saveCategoriesToStorage();
+                updateProductCategorySelect();
+                
+                if (currentEditingCategoryKey) {
+                    showNotification('Catégorie modifiée avec succès !', 'success');
+                } else {
+                    showNotification('Nouvelle catégorie ajoutée avec succès !', 'success');
+                }
+                
+                clearCategoryForm();
+                loadCategoriesDisplay();
+                updateDashboard();
+                
+                console.log('✅ Catégorie sauvegardée:', categoriesData[key]);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la sauvegarde de la catégorie:', error);
+                showNotification('Erreur lors de la sauvegarde: ' + error.message, 'error');
+            }
+        }
+
+        function loadCategoriesDisplay() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
+            
+            const categoryKeys = Object.keys(categoriesData);
+            
+            if (categoryKeys.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1; padding: 2rem;">Aucune catégorie. Ajoutez votre première catégorie !</p>';
                 return;
             }
             
-            // Vérifier l'extension du fichier
-            const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-            const hasValidExtension = validExtensions.some(ext => 
-                fileName.toLowerCase().endsWith(ext)
-            );
+            categoryKeys.forEach(key => {
+                const category = categoriesData[key];
+                const card = createCategoryCard(key, category);
+                grid.appendChild(card);
+            });
+        }
+
+        function createCategoryCard(key, category) {
+            const div = document.createElement('div');
+            div.className = 'category-card-admin';
             
-            if (!hasValidExtension) {
-                showNotification('Extension non valide ! Utilisez: .jpg, .jpeg, .png, .webp', 'error');
-                imageInput.classList.add('invalid');
-                imageInput.classList.remove('valid');
-                return;
-            }
+            // Compter les produits utilisant cette catégorie
+            const productsCount = productsData.filter(p => p.category === key).length;
             
-            // Construire le chemin complet
-            const fullPath = `assets/images/products/${fileName}`;
-            
-            // Afficher le chemin
-            pathDisplay.textContent = fullPath;
-            pathDisplay.classList.add('show');
-            
-            // Créer un élément image pour tester le chargement
-            const img = new Image();
-            
-            // Afficher un indicateur de chargement
-            previewContainer.innerHTML = `
-                <div class="loading-indicator">⏳ Chargement...</div>
-                <span>Vérification du fichier...</span>
+            div.innerHTML = `
+                <div class="category-icon-display">${category.icon}</div>
+                <div class="category-info">
+                    <h3>${category.name}</h3>
+                    <p><strong>Clé:</strong> ${key}</p>
+                    <p><strong>Description:</strong> ${category.description}</p>
+                    <p><strong>Produits:</strong> ${productsCount} produit(s)</p>
+                </div>
+                <div class="category-actions">
+                    <button class="btn btn-small" onclick="editCategory('${key}')">✏️ Modifier</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteCategory('${key}')">🗑️ Supprimer</button>
+                </div>
+                ${productsCount > 0 ? `
+                <div class="categories-used">
+                    ⚠️ Cette catégorie est utilisée par ${productsCount} produit(s)
+                </div>
+                ` : ''}
             `;
             
-            img.onload = function() {
-                previewContainer.innerHTML = `
-                    <img src="${fullPath}" alt="Aperçu ${imageNumber}">
-                    <div class="image-status success">✓</div>
-                `;
-                previewContainer.classList.add('has-image');
-                imageInput.classList.add('valid');
-                imageInput.classList.remove('invalid');
-                showNotification(`Image ${imageNumber} trouvée et chargée !`, 'success');
-            };
-            
-            img.onerror = function() {
-                previewContainer.innerHTML = `
-                    <span style="color: #dc3545;">❌ Fichier non trouvé</span>
-                    <div class="image-status error">✗</div>
-                `;
-                previewContainer.classList.remove('has-image');
-                imageInput.classList.add('invalid');
-                imageInput.classList.remove('valid');
-                showNotification(`Fichier non trouvé: ${fileName}`, 'error');
-            };
-            
-            img.src = fullPath;
+            return div;
         }
 
-        function validateAllImages() {
-            let allValid = true;
-            const imageInputs = ['productImage1', 'productImage2', 'productImage3'];
+        function editCategory(key) {
+            const category = categoriesData[key];
+            if (!category) return;
             
-            imageInputs.forEach((inputId, index) => {
-                const input = document.getElementById(inputId);
-                const fileName = input.value.trim();
-                
-                if (!fileName) {
-                    allValid = false;
-                    input.classList.add('invalid');
-                    showNotification(`Image ${index + 1} manquante !`, 'error');
-                }
+            currentEditingCategoryKey = key;
+            
+            document.getElementById('categoryName').value = category.name;
+            document.getElementById('categoryKey').value = key;
+            document.getElementById('categoryIcon').value = category.icon;
+            document.getElementById('categoryDescription').value = category.description;
+            
+            document.getElementById('categoryFormTitle').textContent = '✏️ Modifier la catégorie';
+            updateCategoryPreview();
+            showTab('categories');
+        }
+
+        function deleteCategory(key) {
+            const category = categoriesData[key];
+            const productsCount = productsData.filter(p => p.category === key).length;
+            
+            let confirmMessage = `Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`;
+            if (productsCount > 0) {
+                confirmMessage += `\n\n⚠️ ATTENTION: Cette catégorie est utilisée par ${productsCount} produit(s). Ces produits ne seront plus associés à une catégorie valide.`;
+            }
+            
+            if (confirm(confirmMessage)) {
+                delete categoriesData[key];
+                saveCategoriesToStorage();
+                updateProductCategorySelect();
+                loadCategoriesDisplay();
+                updateDashboard();
+                showNotification(`Catégorie "${category.name}" supprimée avec succès !`, 'success');
+            }
+        }
+
+        function clearCategoryForm() {
+            document.getElementById('categoryForm').reset();
+            currentEditingCategoryKey = null;
+            document.getElementById('categoryFormTitle').textContent = '➕ Ajouter une nouvelle catégorie';
+            document.getElementById('emojiPicker').style.display = 'none';
+            updateCategoryPreview();
+        }
+
+        function searchCategories() {
+            const searchTerm = document.getElementById('categorySearch').value.toLowerCase();
+            const filteredKeys = Object.keys(categoriesData).filter(key => {
+                const category = categoriesData[key];
+                return category.name.toLowerCase().includes(searchTerm) ||
+                       category.description.toLowerCase().includes(searchTerm) ||
+                       key.toLowerCase().includes(searchTerm);
             });
             
-            return allValid;
-        }
-
-        function getImagePaths() {
-            const image1 = document.getElementById('productImage1').value.trim();
-            const image2 = document.getElementById('productImage2').value.trim();
-            const image3 = document.getElementById('productImage3').value.trim();
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
             
-            return [
-                `assets/images/products/${image1}`,
-                `assets/images/products/${image2}`,
-                `assets/images/products/${image3}`
-            ];
-        }
-
-        function cleanFileName(fileName) {
-            return fileName
-                .toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[^a-z0-9.-]/g, '');
-        }
-
-        function setupImageInputListeners() {
-            ['productImage1', 'productImage2', 'productImage3'].forEach(inputId => {
-                const input = document.getElementById(inputId);
-                if (input) {
-                    input.addEventListener('input', function() {
-                        const cleaned = cleanFileName(this.value);
-                        if (cleaned !== this.value) {
-                            this.value = cleaned;
-                        }
-                        
-                        this.classList.remove('valid', 'invalid');
-                        
-                        const pathDisplay = document.getElementById(`imagePath${inputId.slice(-1)}`);
-                        if (pathDisplay) {
-                            pathDisplay.classList.remove('show');
-                        }
-                    });
-                }
+            if (filteredKeys.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">Aucune catégorie trouvée pour cette recherche.</p>';
+                return;
+            }
+            
+            filteredKeys.forEach(key => {
+                const category = categoriesData[key];
+                const card = createCategoryCard(key, category);
+                grid.appendChild(card);
             });
         }
+
+        function updateProductCategorySelect() {
+            const select = document.getElementById('productCategory');
+            if (!select) return;
+            
+            // Conserver la valeur actuelle
+            const currentValue = select.value;
+            
+            // Vider et reconstruire les options
+            select.innerHTML = '<option value="">Sélectionner...</option>';
+            
+            Object.keys(categoriesData).forEach(key => {
+                const category = categoriesData[key];
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${category.icon} ${category.name}`;
+                select.appendChild(option);
+            });
+            
+            // Restaurer la valeur si elle existe encore
+            if (currentValue && categoriesData[currentValue]) {
+                select.value = currentValue;
+            }
+        }
+
+        // ==========================================
+        // GESTION DES PRODUITS (mise à jour pour catégories)
+        // ==========================================
 
         function loadProducts() {
             const savedProducts = localStorage.getItem('laglue_products');
@@ -1085,7 +1505,7 @@
                         original_price: 800000,
                         description: "iPhone 15 Pro avec puce A17 Pro",
                         full_description: "iPhone 15 Pro avec puce A17 Pro révolutionnaire, appareil photo professionnel et design en titane de qualité aéronautique.",
-                        features: ["Puce A17 Pro", "Écran 6.1\" Super Retina XDR", "Triple appareil photo 48 Mpx", "Design en titane"],
+                        features: ["Puce A17 Pro", "Écran 6.1\" Super Retina XDR", "Triple appareil photo 48 Mpx", "Vidéo 4K ProRes", "Design en titane", "USB-C", "Action Button"],
                         images: [
                             "assets/images/products/iphone15-face.jpg",
                             "assets/images/products/iphone15-back.jpg", 
@@ -1096,26 +1516,6 @@
                         rating: 4.8,
                         tags: ["nouveau", "haut-de-gamme"],
                         display_priority: "recent"
-                    },
-                    {
-                        id: 2,
-                        name: "MacBook Air M2",
-                        category: "ordinateurs",
-                        price: 980000,
-                        original_price: null,
-                        description: "MacBook Air avec puce M2, design ultra-fin",
-                        full_description: "Le MacBook Air M2 13 pouces incarne la puissance dans un design incroyablement fin de seulement 11,3 mm d'épaisseur.",
-                        features: ["Puce Apple M2", "Écran 13.6\" Liquid Retina", "8 GB RAM", "SSD 256 GB"],
-                        images: [
-                            "assets/images/products/macbook-air-front.jpg",
-                            "assets/images/products/macbook-air-side.jpg",
-                            "assets/images/products/macbook-air-open.jpg"
-                        ],
-                        main_image: "assets/images/products/macbook-air-front.jpg",
-                        stock: { quantity: 5, status: "low_stock" },
-                        rating: 4.7,
-                        tags: ["haut-de-gamme"],
-                        display_priority: "popular"
                     }
                 ];
                 saveProductsToStorage();
@@ -1125,6 +1525,7 @@
         function saveProductsToStorage() {
             localStorage.setItem('laglue_products', JSON.stringify(productsData));
             const mainSiteData = {
+                categories: categoriesData,
                 products: productsData,
                 store_info: {
                     name: "La Glue !",
@@ -1162,6 +1563,14 @@
                         if (saveStatus) saveStatus.textContent = '❌ Erreur - champs manquants';
                         return;
                     }
+                }
+                
+                // Vérifier que la catégorie sélectionnée existe
+                const selectedCategory = document.getElementById('productCategory').value;
+                if (!categoriesData[selectedCategory]) {
+                    showNotification('La catégorie sélectionnée n\'existe pas !', 'error');
+                    if (saveStatus) saveStatus.textContent = '❌ Erreur - catégorie invalide';
+                    return;
                 }
                 
                 // Validation des images
@@ -1294,6 +1703,15 @@
             
             const imageCount = product.images ? product.images.length : 0;
             
+            // Obtenir le nom de la catégorie
+            const categoryName = categoriesData[product.category] ? 
+                categoriesData[product.category].name : 
+                'Catégorie inconnue';
+            
+            const categoryIcon = categoriesData[product.category] ? 
+                categoriesData[product.category].icon : 
+                '❓';
+            
             div.innerHTML = `
                 <img src="${product.main_image}" alt="${product.name}" class="product-image-admin" 
                      onerror="this.src='https://via.placeholder.com/300x200/667eea/white?text=Image'">
@@ -1303,7 +1721,7 @@
                         ${formatPrice(product.price)}
                         ${discount > 0 ? `<span style="font-size: 0.8em; color: #dc3545;">(-${discount}%)</span>` : ''}
                     </div>
-                    <p><strong>Catégorie:</strong> ${getCategoryName(product.category)}</p>
+                    <p><strong>Catégorie:</strong> ${categoryIcon} ${categoryName}</p>
                     <p><strong>Stock:</strong> ${product.stock ? product.stock.quantity : 'N/A'}</p>
                     <p><strong>Images:</strong> ${imageCount}/3 📷</p>
                     <p><strong>Note:</strong> ${product.rating ? product.rating + '⭐' : 'N/A'}</p>
@@ -1369,16 +1787,289 @@
         }
 
         function updateDashboard() {
+            const totalCategories = Object.keys(categoriesData).length;
             const totalProducts = productsData.length;
             const totalValue = productsData.reduce((sum, product) => sum + (product.price * (product.stock?.quantity || 0)), 0);
             const lowStockCount = productsData.filter(product => (product.stock?.quantity || 0) < 5).length;
-            const categories = [...new Set(productsData.map(p => p.category))].length;
             
+            const totalOrders = ordersData ? ordersData.length : 0;
+             const todayRevenue = ordersData ? ordersData
+        .filter(order => new Date(order.timestamp).toDateString() === new Date().toDateString())
+        .reduce((sum, order) => sum + order.totals.total, 0) : 0;
+
+
+            document.getElementById('totalCategories').textContent = totalCategories;
             document.getElementById('totalProducts').textContent = totalProducts;
             document.getElementById('totalValue').textContent = formatPrice(totalValue);
             document.getElementById('lowStockCount').textContent = lowStockCount;
-            document.getElementById('categoriesCount').textContent = categories;
         }
+
+
+        // ==========================================
+        // GESTION DES COMMANDES
+        // ==========================================
+
+        let ordersData = [];
+
+        function loadOrders() {
+            const savedOrders = localStorage.getItem('laglue_admin_orders');
+            if (savedOrders) {
+                ordersData = JSON.parse(savedOrders);
+            } else {
+                ordersData = [];
+            }
+            console.log(`📋 ${ordersData.length} commandes chargées`);
+        }
+
+        function loadOrdersDisplay() {
+            const container = document.getElementById('ordersGrid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (ordersData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 3rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                        <h3>Aucune commande</h3>
+                        <p>Les commandes des clients apparaîtront ici</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Trier par date (plus récent en premier)
+            const sortedOrders = [...ordersData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            sortedOrders.forEach(order => {
+                const orderCard = createOrderCard(order);
+                container.appendChild(orderCard);
+            });
+        }
+
+        function createOrderCard(order) {
+            const div = document.createElement('div');
+            div.className = 'order-card';
+            div.style.cssText = `
+                background: white;
+                border-radius: 15px;
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s;
+                border-left: 5px solid #667eea;
+            `;
+            
+            // Calculer le temps écoulé
+            const orderTime = new Date(order.timestamp);
+            const now = new Date();
+            const diffMinutes = Math.floor((now - orderTime) / (1000 * 60));
+            let timeAgo = '';
+            
+            if (diffMinutes < 1) timeAgo = 'À l\'instant';
+            else if (diffMinutes < 60) timeAgo = `Il y a ${diffMinutes} min`;
+            else if (diffMinutes < 1440) timeAgo = `Il y a ${Math.floor(diffMinutes / 60)}h`;
+            else timeAgo = `Il y a ${Math.floor(diffMinutes / 1440)} jour(s)`;
+            
+            // Statut de la commande
+            let statusBadge = '';
+            switch(order.status) {
+                case 'pending':
+                    statusBadge = '<span style="background: #ffc107; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">⏳ En attente</span>';
+                    break;
+                case 'confirmed':
+                    statusBadge = '<span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">✅ Confirmée</span>';
+                    break;
+                case 'delivered':
+                    statusBadge = '<span style="background: #6f42c1; color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">🚚 Livrée</span>';
+                    break;
+                default:
+                    statusBadge = '<span style="background: #6c757d; color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">❓ Inconnu</span>';
+            }
+            
+            // Liste des produits (condensée)
+            let itemsList = '';
+            order.items.forEach((item, index) => {
+                if (index < 3) {
+                    itemsList += `<div style="font-size: 0.9rem; color: #666; margin-bottom: 0.25rem;">• ${item.name} x${item.quantity}</div>`;
+                } else if (index === 3) {
+                    itemsList += `<div style="font-size: 0.9rem; color: #999;">... et ${order.items.length - 3} autre(s) produit(s)</div>`;
+                }
+            });
+            
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="color: #333; margin-bottom: 0.5rem; font-size: 1.2rem;">📄 ${order.code}</h4>
+                        <div style="color: #666; font-size: 0.9rem;">${timeAgo} • ${order.date} à ${order.time}</div>
+                    </div>
+                    ${statusBadge}
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
+                    <div>
+                        <h5 style="color: #667eea; margin-bottom: 0.5rem;">👤 Client</h5>
+                        <div style="font-weight: bold; margin-bottom: 0.25rem;">${order.customer.name}</div>
+                        <div style="color: #666; font-size: 0.9rem;">📱 ${order.customer.whatsapp}</div>
+                        <div style="color: #666; font-size: 0.9rem;">📍 ${order.customer.address}</div>
+                        ${order.customer.isAuthenticated ? '<div style="color: #28a745; font-size: 0.8rem; margin-top: 0.25rem;">✅ Client connecté</div>' : '<div style="color: #ffc107; font-size: 0.8rem; margin-top: 0.25rem;">⚡ Commande express</div>'}
+                    </div>
+                    
+                    <div>
+                        <h5 style="color: #667eea; margin-bottom: 0.5rem;">📦 Produits (${order.totals.itemsCount})</h5>
+                        ${itemsList}
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #28a745;">
+                        💰 Total: ${formatPrice(order.totals.total)}
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="viewOrderDetails('${order.code}')" class="btn btn-small" style="padding: 6px 12px;">
+                            👁️ Détails
+                        </button>
+                        <button onclick="changeOrderStatus('${order.code}')" class="btn btn-small btn-secondary" style="padding: 6px 12px;">
+                            🔄 Statut
+                        </button>
+                        <button onclick="contactCustomer('${order.customer.whatsapp}', '${order.customer.name}', '${order.code}')" class="btn btn-small btn-success" style="padding: 6px 12px;">
+                            📱 Contacter
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function updateOrdersStats() {
+            const totalOrders = ordersData.length;
+            
+            // Commandes d'aujourd'hui
+            const today = new Date().toDateString();
+            const todayOrders = ordersData.filter(order => 
+                new Date(order.timestamp).toDateString() === today
+            ).length;
+            
+            // Chiffre d'affaires total
+            const totalRevenue = ordersData.reduce((sum, order) => sum + order.totals.total, 0);
+            
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('todayOrders').textContent = todayOrders;
+            document.getElementById('totalRevenue').textContent = formatPrice(totalRevenue);
+        }
+
+        function searchOrders() {
+            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+            const filteredOrders = ordersData.filter(order => 
+                order.code.toLowerCase().includes(searchTerm) ||
+                order.customer.name.toLowerCase().includes(searchTerm) ||
+                order.customer.whatsapp.includes(searchTerm) ||
+                order.customer.address.toLowerCase().includes(searchTerm)
+            );
+            
+            const container = document.getElementById('ordersGrid');
+            container.innerHTML = '';
+            
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Aucune commande trouvée pour cette recherche.</p>';
+                return;
+            }
+            
+            filteredOrders.forEach(order => {
+                const card = createOrderCard(order);
+                container.appendChild(card);
+            });
+        }
+
+        function viewOrderDetails(orderCode) {
+            const order = ordersData.find(o => o.code === orderCode);
+            if (!order) return;
+            
+            let detailsHTML = `
+                <div style="max-width: 600px;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">📄 Commande ${order.code}</h3>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <h4>👤 Informations client</h4>
+                        <p><strong>Nom:</strong> ${order.customer.name}</p>
+                        <p><strong>WhatsApp:</strong> ${order.customer.whatsapp}</p>
+                        <p><strong>Adresse:</strong> ${order.customer.address}</p>
+                        <p><strong>Type:</strong> ${order.customer.isAuthenticated ? 'Client connecté' : 'Commande express'}</p>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <h4>📦 Produits commandés</h4>
+            `;
+            
+            order.items.forEach(item => {
+                detailsHTML += `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 5px;">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span style="font-weight: bold;">${formatPrice(item.total)}</span>
+                    </div>
+                `;
+            });
+            
+            detailsHTML += `
+                    </div>
+                    
+                    <div style="background: #e8f5e8; padding: 1rem; border-radius: 10px;">
+                        <h4>💰 Récapitulatif</h4>
+                        <div style="display: flex; justify-content: space-between;"><span>Sous-total:</span><span>${formatPrice(order.totals.subtotal)}</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Livraison:</span><span>${formatPrice(order.totals.deliveryFee)}</span></div>
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ccc;">
+                            <span>Total:</span><span>${formatPrice(order.totals.total)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Utiliser une alerte custom ou modal
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 3000;';
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 15px; max-height: 80vh; overflow-y: auto;">
+                    ${detailsHTML}
+                    <button onclick="this.parentElement.parentElement.remove()" class="btn" style="margin-top: 1rem; width: 100%;">Fermer</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function changeOrderStatus(orderCode) {
+            const order = ordersData.find(o => o.code === orderCode);
+            if (!order) return;
+            
+            const statuses = [
+                { value: 'pending', label: '⏳ En attente' },
+                { value: 'confirmed', label: '✅ Confirmée' },
+                { value: 'delivered', label: '🚚 Livrée' }
+            ];
+            
+            const currentIndex = statuses.findIndex(s => s.value === order.status);
+            const options = statuses.map((s, i) => 
+                `${i + 1}. ${s.label} ${i === currentIndex ? '(actuel)' : ''}`
+            ).join('\n');
+            
+            const choice = prompt(`Changer le statut de la commande ${orderCode}:\n\n${options}\n\nEntrez le numéro (1-3):`);
+            
+            if (choice && choice >= 1 && choice <= 3) {
+                order.status = statuses[choice - 1].value;
+                localStorage.setItem('laglue_admin_orders', JSON.stringify(ordersData));
+                loadOrdersDisplay();
+                showNotification(`Statut mis à jour: ${statuses[choice - 1].label}`, 'success');
+            }
+        }
+
+        function contactCustomer(whatsapp, customerName, orderCode) {
+            const message = `Bonjour ${customerName},\n\nConcernant votre commande ${orderCode}, nous vous contactons pour...\n\nCordialement,\nLa Glue !`;
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${whatsapp}?text=${encodedMessage}`, '_blank');
+        }
+
+        
 
         function searchProducts() {
             const searchTerm = document.getElementById('productSearch').value.toLowerCase();
@@ -1402,6 +2093,132 @@
             });
         }
 
+        // ==========================================
+        // FONCTIONS D'IMAGES (inchangées)
+        // ==========================================
+
+        function showLocalImagePreview(imageNumber) {
+            const imageInput = document.getElementById(`productImage${imageNumber}`);
+            const previewContainer = document.getElementById(`imagePreview${imageNumber}`);
+            const pathDisplay = document.getElementById(`imagePath${imageNumber}`);
+            const fileName = imageInput.value.trim();
+            
+            if (!fileName) {
+                showNotification('Veuillez saisir un nom de fichier !', 'error');
+                return;
+            }
+            
+            const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+            const hasValidExtension = validExtensions.some(ext => 
+                fileName.toLowerCase().endsWith(ext)
+            );
+            
+            if (!hasValidExtension) {
+                showNotification('Extension non valide ! Utilisez: .jpg, .jpeg, .png, .webp', 'error');
+                imageInput.classList.add('invalid');
+                imageInput.classList.remove('valid');
+                return;
+            }
+            
+            const fullPath = `assets/images/products/${fileName}`;
+            
+            pathDisplay.textContent = fullPath;
+            pathDisplay.classList.add('show');
+            
+            const img = new Image();
+            
+            previewContainer.innerHTML = `
+                <div class="loading-indicator">⏳ Chargement...</div>
+                <span>Vérification du fichier...</span>
+            `;
+            
+            img.onload = function() {
+                previewContainer.innerHTML = `
+                    <img src="${fullPath}" alt="Aperçu ${imageNumber}">
+                    <div class="image-status success">✓</div>
+                `;
+                previewContainer.classList.add('has-image');
+                imageInput.classList.add('valid');
+                imageInput.classList.remove('invalid');
+                showNotification(`Image ${imageNumber} trouvée et chargée !`, 'success');
+            };
+            
+            img.onerror = function() {
+                previewContainer.innerHTML = `
+                    <span style="color: #dc3545;">❌ Fichier non trouvé</span>
+                    <div class="image-status error">✗</div>
+                `;
+                previewContainer.classList.remove('has-image');
+                imageInput.classList.add('invalid');
+                imageInput.classList.remove('valid');
+                showNotification(`Fichier non trouvé: ${fileName}`, 'error');
+            };
+            
+            img.src = fullPath;
+        }
+
+        function validateAllImages() {
+            let allValid = true;
+            const imageInputs = ['productImage1', 'productImage2', 'productImage3'];
+            
+            imageInputs.forEach((inputId, index) => {
+                const input = document.getElementById(inputId);
+                const fileName = input.value.trim();
+                
+                if (!fileName) {
+                    allValid = false;
+                    input.classList.add('invalid');
+                    showNotification(`Image ${index + 1} manquante !`, 'error');
+                }
+            });
+            
+            return allValid;
+        }
+
+        function getImagePaths() {
+            const image1 = document.getElementById('productImage1').value.trim();
+            const image2 = document.getElementById('productImage2').value.trim();
+            const image3 = document.getElementById('productImage3').value.trim();
+            
+            return [
+                `assets/images/products/${image1}`,
+                `assets/images/products/${image2}`,
+                `assets/images/products/${image3}`
+            ];
+        }
+
+        function cleanFileName(fileName) {
+            return fileName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9.-]/g, '');
+        }
+
+        function setupImageInputListeners() {
+            ['productImage1', 'productImage2', 'productImage3'].forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        const cleaned = cleanFileName(this.value);
+                        if (cleaned !== this.value) {
+                            this.value = cleaned;
+                        }
+                        
+                        this.classList.remove('valid', 'invalid');
+                        
+                        const pathDisplay = document.getElementById(`imagePath${inputId.slice(-1)}`);
+                        if (pathDisplay) {
+                            pathDisplay.classList.remove('show');
+                        }
+                    });
+                }
+            });
+        }
+
+        // ==========================================
+        // FONCTIONS UTILITAIRES ET PARAMÈTRES
+        // ==========================================
+
         function changePassword() {
             const newPassword = document.getElementById('newPassword').value;
             if (!newPassword || newPassword.length < 6) {
@@ -1418,6 +2235,7 @@
 
         function exportData() {
             const dataToExport = {
+                categories: categoriesData,
                 products: productsData,
                 exportDate: new Date().toISOString(),
                 version: "2.0"
@@ -1427,7 +2245,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `laglue-products-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `laglue-data-${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1450,16 +2268,21 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     
-                    if (importedData.products && Array.isArray(importedData.products)) {
-                        if (confirm('Cette action remplacera tous les produits existants. Continuer ?')) {
-                            productsData = importedData.products;
-                            saveProductsToStorage();
-                            loadProductsDisplay();
-                            updateDashboard();
-                            showNotification('Données importées avec succès !', 'success');
+                    if (confirm('Cette action remplacera toutes les données existantes. Continuer ?')) {
+                        if (importedData.categories) {
+                            categoriesData = importedData.categories;
                         }
-                    } else {
-                        showNotification('Format de fichier invalide !', 'error');
+                        if (importedData.products && Array.isArray(importedData.products)) {
+                            productsData = importedData.products;
+                        }
+                        
+                        saveCategoriesToStorage();
+                        saveProductsToStorage();
+                        updateProductCategorySelect();
+                        loadCategoriesDisplay();
+                        loadProductsDisplay();
+                        updateDashboard();
+                        showNotification('Données importées avec succès !', 'success');
                     }
                 } catch (error) {
                     showNotification('Erreur lors de la lecture du fichier !', 'error');
@@ -1472,10 +2295,14 @@
         }
 
         function resetData() {
-            if (confirm('⚠️ ATTENTION : Cette action supprimera TOUS les produits de manière irréversible. Êtes-vous absolument sûr ?')) {
-                if (confirm('Dernière confirmation : Supprimer TOUS les produits ?')) {
+            if (confirm('⚠️ ATTENTION : Cette action supprimera TOUTES les données de manière irréversible. Êtes-vous absolument sûr ?')) {
+                if (confirm('Dernière confirmation : Supprimer TOUTES les données (catégories + produits) ?')) {
+                    categoriesData = {};
                     productsData = [];
+                    saveCategoriesToStorage();
                     saveProductsToStorage();
+                    updateProductCategorySelect();
+                    loadCategoriesDisplay();
                     loadProductsDisplay();
                     updateDashboard();
                     showNotification('Toutes les données ont été supprimées !', 'success');
@@ -1504,25 +2331,6 @@
             return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
         }
 
-        function getCategoryName(category) {
-            const names = {
-                'smartphones': 'Smartphones',
-                'ordinateurs': 'Ordinateurs',
-                'tablettes': 'Tablettes',
-                'audio': 'Audio',
-                'accessoires': 'Accessoires',
-                'electromenager': 'Électroménager',
-                'alimentation': 'Alimentation',
-                'maison': 'Maison & Jardin',
-                'mode': 'Mode & Style',
-                'beaute': 'Beauté & Santé',
-                'gaming': 'Gaming',
-                'photo': 'Photo/Vidéo',
-                'sport': 'Sport & Loisirs'
-            };
-            return names[category] || 'Autre';
-        }
-
         // Recherche en temps réel
         setTimeout(() => {
             const searchInput = document.getElementById('productSearch');
@@ -1532,10 +2340,19 @@
                     this.searchTimeout = setTimeout(searchProducts, 300);
                 });
             }
+
+            const categorySearchInput = document.getElementById('categorySearch');
+            if (categorySearchInput) {
+                categorySearchInput.addEventListener('input', function() {
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(searchCategories, 300);
+                });
+            }
         }, 100);
 
         // Sauvegarde automatique
         function autoSave() {
+            saveCategoriesToStorage();
             saveProductsToStorage();
             console.log('💾 Sauvegarde automatique effectuée');
         }
