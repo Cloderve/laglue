@@ -18,64 +18,37 @@ let productImages = [];
    INITIALISATION
    ========================================== */
 
-function initializeProducts() {
-    if (isLoading) {
-        console.log('⚠️ Initialisation déjà en cours...');
-        return;
-    }
+async function initializeProducts() {
+    if (isLoading) return;
     
     isLoading = true;
-    console.log('🚀 Initialisation des produits avec catégories dynamiques...');
+    console.log('🚀 Initialisation des produits...');
     
     try {
-        // Charger d'abord les catégories, puis les produits
         loadCategoriesFromAdmin();
-        const adminProducts = loadProductsFromAdmin();
+        allProducts = await loadProductsFromAdmin(); // AWAIT ajouté
+        filteredProducts = [...allProducts];
         
-        if (adminProducts && Array.isArray(adminProducts) && adminProducts.length > 0) {
-            // Produits admin trouvés
-            allProducts = adminProducts;
-            filteredProducts = [...allProducts];
-            
-            console.log(`✅ ${allProducts.length} produits chargés depuis l'interface admin`);
-            console.log(`✅ ${Object.keys(allCategories).length} catégories chargées depuis l'interface admin`);
-            
-            // Initialiser l'affichage avec les produits admin
+        if (allProducts.length > 0) {
             displayProductsByCategory();
             displayAllProducts();
             initializeFilters();
             initializeSearch();
             updateResultsCount();
-            
         } else {
-            // AUCUN produit admin trouvé
-            console.log('❌ Aucun produit trouvé dans l\'interface admin');
-            
-            allProducts = [];
-            filteredProducts = [];
-            
-            // Afficher message explicatif
             showEmptyStoreMessage();
-            
-            // Initialiser quand même les filtres et la recherche
             initializeFilters();
             initializeSearch();
             updateResultsCount();
         }
         
     } catch (error) {
-        console.error('❌ Erreur lors de l\'initialisation:', error);
-        showNotification('Erreur lors du chargement des produits', 'error');
-        
-        // En cas d'erreur, boutique vide
-        allProducts = [];
-        filteredProducts = [];
-        allCategories = {};
+        console.error('❌ Erreur:', error);
         showEmptyStoreMessage();
     } finally {
         isLoading = false;
     }
-}
+} 
 
 /* ==========================================
    CHARGEMENT DES CATÉGORIES DEPUIS L'ADMIN
@@ -214,75 +187,32 @@ function forceUpdateCategoriesDisplay() {
 /* ==========================================
    CHARGEMENT DEPUIS L'INTERFACE ADMIN
    ========================================== */
-
-function loadProductsFromAdmin() {
+async function loadProductsFromAdmin() {
     try {
-        console.log('🔍 Recherche des produits depuis l\'interface admin...');
+        console.log('🔍 Chargement depuis products.json...');
         
-        // 1. Vérifier la clé principale de l'admin
+        // 1. Essayer de charger depuis le fichier JSON
+        const response = await fetch('products.json');
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Données chargées depuis products.json:', data.products?.length);
+            return validateAndCleanProducts(data.products || []);
+        }
+        
+        // 2. Fallback localStorage (pour développement local)
+        console.log('⚠️ Fallback vers localStorage...');
         const adminData = localStorage.getItem('laglue_products');
         if (adminData) {
-            try {
-                const products = JSON.parse(adminData);
-                if (Array.isArray(products) && products.length > 0) {
-                    console.log('✅ Produits trouvés dans laglue_products:', products.length);
-                    return validateAndCleanProducts(products);
-                }
-            } catch (parseError) {
-                console.error('❌ Erreur parsing laglue_products:', parseError);
-            }
+            const products = JSON.parse(adminData);
+            return validateAndCleanProducts(products);
         }
         
-        // 2. Vérifier l'ancien format de données
-        const mainData = localStorage.getItem('laglue_main_data');
-        if (mainData) {
-            try {
-                const data = JSON.parse(mainData);
-                if (data.products && Array.isArray(data.products) && data.products.length > 0) {
-                    console.log('✅ Produits trouvés dans laglue_main_data:', data.products.length);
-                    return validateAndCleanProducts(data.products);
-                }
-            } catch (parseError) {
-                console.error('❌ Erreur parsing laglue_main_data:', parseError);
-            }
-        }
-        
-        // 3. Recherche dans toutes les clés liées à l'admin
-        const allKeys = Object.keys(localStorage);
-        console.log('🔍 Recherche dans toutes les clés localStorage...');
-        
-        const possibleKeys = allKeys.filter(key => 
-            key.includes('laglue') && 
-            key.includes('product') && 
-            !key.includes('demo') && 
-            !key.includes('test')
-        );
-        
-        for (const key of possibleKeys) {
-            try {
-                const data = localStorage.getItem(key);
-                const parsed = JSON.parse(data);
-                
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    console.log(`✅ Produits trouvés dans ${key}:`, parsed.length);
-                    return validateAndCleanProducts(parsed);
-                }
-                
-                if (parsed && typeof parsed === 'object' && parsed.products && Array.isArray(parsed.products)) {
-                    console.log(`✅ Produits trouvés dans ${key}.products:`, parsed.products.length);
-                    return validateAndCleanProducts(parsed.products);
-                }
-            } catch (parseError) {
-                console.log(`⚠️ Impossible de parser ${key}`);
-            }
-        }
-        
-        console.log('❌ Aucun produit admin trouvé dans localStorage');
-        return null;
+        console.log('❌ Aucune donnée trouvée');
+        return [];
         
     } catch (error) {
-        console.error('❌ Erreur générale lors du chargement:', error);
-        return null;
+        console.error('❌ Erreur chargement:', error);
+        return [];
     }
 }
 
@@ -1288,13 +1218,10 @@ document.addEventListener('error', function(e) {
    INITIALISATION
    ========================================== */
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Démarrage du système de produits avec catégories dynamiques...');
-    
-    setTimeout(() => {
-        initializeProducts();
-        setupAdminDataListener();
-    }, 100);
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Démarrage...');
+    await initializeProducts(); // AWAIT ajouté
+    setupAdminDataListener();
 });
 
 // Fonctions globales pour l'HTML
