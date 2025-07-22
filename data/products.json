@@ -1,437 +1,52 @@
 {
-  "store_info": {
-    "name": "La Glue !",
-    "description": "Votre boutique de confiance au Cameroun",
-    "contact": {
-      "whatsapp": "237655912990",
-      "address": "Yaoundé, Cameroun",
-      "hours": "Lun - Sam: 8h - 18h"
-    },
-    "delivery": {
-      "zones": {
-        "yaounde_centre": {
-          "name": "Centre-ville Yaoundé",
-          "time": "2-4h",
-          "price": 1000
-        },
-        "yaounde_quartiers": {
-          "name": "Quartiers de Yaoundé",
-          "time": "4-6h", 
-          "price": 1500
-        },
-        "douala": {
-          "name": "Douala",
-          "time": "1-2 jours",
-          "price": 3000
-        },
-        "autres_villes": {
-          "name": "Autres villes",
-          "time": "2-5 jours",
-          "price": 5000
-        }
-      },
-      "free_delivery_threshold": 50000
-    }
-  },
   "categories": {
-    "smartphones": {
-      "name": "Smartphones",
-      "icon": "📱",
-      "description": "Téléphones intelligents de toutes marques"
-    },
-    "ordinateurs": {
-      "name": "Ordinateurs",
-      "icon": "💻", 
-      "description": "Ordinateurs portables et de bureau"
-    },
     "tablettes": {
       "name": "Tablettes",
       "icon": "📋",
       "description": "Tablettes tactiles pour tous usages"
     },
-    "audio": {
-      "name": "Audios",
-      "icon": "🎧",
-      "description": "Écouteurs, enceintes et accessoires audio"
+    "m": {
+      "name": "Smartphones",
+      "icon": "📱",
+      "description": "Téléphone portables"
     },
-    "accessoires": {
-      "name": "Accessoires",
-      "icon": "⌚",
-      "description": "Montres connectées et accessoires tech"
-    },
-    "electromenager": {
-      "name": "Électroménager",
-      "icon": "🏠",
-      "description": "Appareils électroménagers pour la maison"
-    },
-    "alimentation": {
-      "name": "Alimentation",
-      "icon": "🍽️",
-      "description": "Produits alimentaires et boissons"
-    },
-    "maison": {
-      "name": "Maison & Jardin",
-      "icon": "🏡",
-      "description": "Décoration, mobilier et jardinage"
-    },
-    "mode": {
-      "name": "Mode & Style",
+    "b": {
+      "name": "Beauté",
       "icon": "👕",
-      "description": "Vêtements et accessoires de mode"
-    },
-    "beaute": {
-      "name": "Beauté & Santé",
-      "icon": "🧴",
-      "description": "Produits de beauté et de bien-être"
-    },
-    "gaming": {
-      "name": "Gaming",
-      "icon": "🎮",
-      "description": "Jeux vidéo et accessoires gaming"
-    },
-    "photo": {
-      "name": "Photo/Vidéo",
-      "icon": "📷",
-      "description": "Appareils photo et matériel vidéo"
-    },
-    "sport": {
-      "name": "Sport & Loisirs",
-      "icon": "⚽",
-      "description": "Équipements sportifs et loisirs"
+      "description": "Accessoire de beauté stylé"
     }
   },
   "products": [
     {
-      "id": 1,
-      "name": "UFESA Digital Air Fryer 3.5L",
-      "category": "electromenager",
-      "price": 65000,
-      "original_price": null,
-      "discount_percent": 0,
-      "description": "Friteuse à air digitale 3.5L - 80% moins de graisse, 1400W, panier antiadhésif. Cuisson saine et rapide pour toute la famille.",
+      "id": 1753094272089,
+      "name": "Tablette Blackview Tab 12 SE",
+      "category": "tablettes",
+      "price": 90000,
+      "original_price": 100000,
+      "description": "moi de detail",
+      "full_description": "DETAIL",
       "features": [
-        "Capacité 3.5 litres",
-        "Puissance 1400W",
-        "Panier antiadhésif", 
-        "80% moins de graisse",
-        "Contrôle digital",
-        "Température réglable",
-        "Timer intégré"
+        "plus de detail"
       ],
       "images": [
-        "assets/images/products/friteuse-ufesa-1.jpg",
-        "assets/images/products/friteuse-ufesa-2.jpg"
+        "assets/images/products/blackview1.jpg",
+        "assets/images/products/blackview2.jpg",
+        "assets/images/products/blackview4.jpg"
       ],
-      "main_image": "assets/images/products/friteuse-ufesa-1.jpg",
+      "main_image": "assets/images/products/blackview1.jpg",
       "stock": {
-        "quantity": 15,
+        "quantity": 10,
         "status": "in_stock"
       },
-      "tags": ["nouveau", "populaire", "promo"],
-      "rating": 4.5,
-      "reviews_count": 23,
+      "rating": 4,
+      "tags": [
+        "nouveau"
+      ],
       "display_priority": "recent",
-      "supplier_info": {
-        "delivery_time": "24-48h",
-        "warranty": "12 mois"
-      },
-      "seo": {
-        "keywords": ["friteuse", "air fryer", "cuisine", "électroménager"],
-        "meta_description": "Friteuse à air UFESA 3.5L - Cuisine saine avec 80% moins de graisse"
-      }
-    },
-    {
-      "id": 2,
-      "name": "iPhone 15 Pro 128GB",
-      "category": "smartphones",
-      "price": 750000,
-      "original_price": 800000,
-      "discount_percent": 6,
-      "description": "iPhone 15 Pro avec puce A17 Pro, appareil photo professionnel et design en titane. Le smartphone le plus avancé d'Apple.",
-      "features": [
-        "Puce A17 Pro",
-        "Écran Super Retina XDR 6.1\"",
-        "Triple appareil photo 48 Mpx",
-        "Vidéo 4K ProRes",
-        "Design en titane",
-        "USB-C",
-        "Action Button"
-      ],
-      "images": [
-        "assets/images/products/iphone-15-pro-1.jpg",
-        "assets/images/products/iphone-15-pro-2.jpg",
-        "assets/images/products/iphone-15-pro-3.jpg"
-      ],
-      "main_image": "assets/images/products/iphone-15-pro-1.jpg",
-      "stock": {
-        "quantity": 8,
-        "status": "in_stock"
-      },
-      "tags": ["nouveau", "haut-de-gamme"],
-      "rating": 4.8,
-      "reviews_count": 45,
-      "display_priority": "recent",
-      "supplier_info": {
-        "delivery_time": "48-72h",
-        "warranty": "12 mois Apple"
-      },
-      "variants": [
-        {
-          "name": "128GB Titane Naturel",
-          "price": 750000,
-          "stock": 8
-        },
-        {
-          "name": "256GB Titane Naturel", 
-          "price": 850000,
-          "stock": 5
-        },
-        {
-          "name": "128GB Titane Noir",
-          "price": 750000,
-          "stock": 3
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "MacBook Air M2 13\"",
-      "category": "ordinateurs",
-      "price": 980000,
-      "original_price": null,
-      "discount_percent": 0,
-      "description": "MacBook Air avec puce M2, design ultra-fin et autonomie exceptionnelle. Parfait pour le travail et la création.",
-      "features": [
-        "Puce Apple M2",
-        "Écran Liquid Retina 13.6\"",
-        "8 cœurs CPU, 8 cœurs GPU",
-        "8 GB RAM unifiée",
-        "SSD 256 GB",
-        "Autonomie 18h",
-        "Caméra FaceTime HD 1080p"
-      ],
-      "images": [
-        "assets/images/products/macbook-air-m2-1.jpg",
-        "assets/images/products/macbook-air-m2-2.jpg"
-      ],
-      "main_image": "assets/images/products/macbook-air-m2-1.jpg",
-      "stock": {
-        "quantity": 5,
-        "status": "low_stock"
-      },
-      "tags": ["haut-de-gamme", "professionnel"],
-      "rating": 4.7,
       "reviews_count": 32,
-      "display_priority": "popular",
-      "supplier_info": {
-        "delivery_time": "72h-5j",
-        "warranty": "12 mois Apple"
-      }
-    },
-    {
-      "id": 4,
-      "name": "Samsung Galaxy S24 Ultra",
-      "category": "smartphones", 
-      "price": 820000,
-      "original_price": 900000,
-      "discount_percent": 9,
-      "description": "Galaxy S24 Ultra avec S Pen intégré, appareil photo 200 Mpx et écran Dynamic AMOLED 2X de 6.8 pouces.",
-      "features": [
-        "Processeur Snapdragon 8 Gen 3",
-        "Écran 6.8\" Dynamic AMOLED 2X",
-        "Appareil photo 200 Mpx",
-        "S Pen intégré",
-        "12 GB RAM",
-        "256 GB stockage",
-        "Batterie 5000 mAh"
-      ],
-      "images": [
-        "assets/images/products/galaxy-s24-ultra-1.jpg"
-      ],
-      "main_image": "assets/images/products/galaxy-s24-ultra-1.jpg", 
-      "stock": {
-        "quantity": 12,
-        "status": "in_stock"
-      },
-      "tags": ["nouveau", "populaire"],
-      "rating": 4.6,
-      "reviews_count": 28,
-      "display_priority": "popular"
-    },
-    {
-      "id": 5,
-      "name": "AirPods Pro 2ème génération",
-      "category": "audio",
-      "price": 180000,
-      "original_price": 220000,
-      "discount_percent": 18,
-      "description": "AirPods Pro avec réduction de bruit active avancée, audio spatial personnalisé et nouvelle puce H2.",
-      "features": [
-        "Puce H2 d'Apple",
-        "Réduction de bruit active",
-        "Mode Transparence adaptatif",
-        "Audio spatial personnalisé",
-        "Autonomie jusqu'à 30h",
-        "Résistance à l'eau IPX4",
-        "Recharge sans fil"
-      ],
-      "images": [
-        "assets/images/products/airpods-pro-2-1.jpg"
-      ],
-      "main_image": "assets/images/products/airpods-pro-2-1.jpg",
-      "stock": {
-        "quantity": 20,
-        "status": "in_stock"
-      },
-      "tags": ["promo", "populaire"],
-      "rating": 4.5,
-      "reviews_count": 67,
-      "display_priority": "popular",
-      "supplier_info": {
-        "delivery_time": "24-48h",
-        "warranty": "12 mois Apple"
-      }
-    },
-    {
-      "id": 6,
-      "name": "Nescafé Gold 200g",
-      "category": "alimentation",
-      "price": 3500,
-      "original_price": null,
-      "discount_percent": 0,
-      "description": "Café soluble premium Nescafé Gold, mélange délicat d'arabica et robusta pour un goût riche et aromatique.",
-      "features": [
-        "Café soluble premium",
-        "Mélange arabica et robusta",
-        "Pot de 200g",
-        "Goût riche et aromatique",
-        "Préparation instantanée",
-        "Date de péremption longue"
-      ],
-      "images": [
-        "assets/images/products/nescafe-gold-1.jpg"
-      ],
-      "main_image": "assets/images/products/nescafe-gold-1.jpg",
-      "stock": {
-        "quantity": 50,
-        "status": "in_stock"
-      },
-      "tags": ["quotidien", "populaire"],
-      "rating": 4.3,
-      "reviews_count": 89,
-      "display_priority": "popular",
-      "supplier_info": {
-        "delivery_time": "4-8h",
-        "expiry_date": "2025-12-31"
-      }
-    },
-    {
-      "id": 7,
-      "name": "Adidas Ultraboost 22",
-      "category": "sport",
-      "price": 85000,
-      "original_price": 95000,
-      "discount_percent": 11,
-      "description": "Chaussures de running Adidas Ultraboost 22 avec technologie Boost pour un retour d'énergie optimal.",
-      "features": [
-        "Technologie Boost",
-        "Tige Primeknit+",
-        "Semelle Continental",
-        "Support naturel du pied",
-        "Confort optimal",
-        "Design moderne"
-      ],
-      "images": [
-        "assets/images/products/adidas-ultraboost-1.jpg"
-      ],
-      "main_image": "assets/images/products/adidas-ultraboost-1.jpg",
-      "stock": {
-        "quantity": 25,
-        "status": "in_stock"
-      },
-      "tags": ["sport", "tendance"],
-      "rating": 4.4,
-      "reviews_count": 41,
-      "display_priority": "recent",
-      "variants": [
-        {
-          "name": "Taille 40 - Noir",
-          "price": 85000,
-          "stock": 5
-        },
-        {
-          "name": "Taille 42 - Noir",
-          "price": 85000, 
-          "stock": 8
-        },
-        {
-          "name": "Taille 44 - Blanc",
-          "price": 85000,
-          "stock": 7
-        }
-      ]
-    },
-    {
-      "id": 8,
-      "name": "L'Oréal Paris Revitalift Crème",
-      "category": "beaute",
-      "price": 12500,
-      "original_price": 15000,
-      "discount_percent": 17,
-      "description": "Crème anti-âge L'Oréal Revitalift avec Pro-Retinol et Centella Asiatica pour réduire les rides et raffermir la peau.",
-      "features": [
-        "Pro-Retinol avancé",
-        "Centella Asiatica",
-        "Réduit les rides",
-        "Raffermit la peau",
-        "Hydratation 24h",
-        "Tous types de peau"
-      ],
-      "images": [
-        "assets/images/products/loreal-revitalift-1.jpg"
-      ],
-      "main_image": "assets/images/products/loreal-revitalift-1.jpg",
-      "stock": {
-        "quantity": 35,
-        "status": "in_stock"
-      },
-      "tags": ["beauté", "promo"],
-      "rating": 4.2,
-      "reviews_count": 156,
-      "display_priority": "popular"
+      "discount_percent": 10
     }
   ],
-  "promotions": {
-    "active": [
-      {
-        "id": "promo1",
-        "type": "free_delivery",
-        "title": "Livraison gratuite",
-        "description": "Livraison gratuite dès 50 000 FCFA d'achat",
-        "condition": "min_amount",
-        "value": 50000,
-        "valid_until": "2024-12-31"
-      },
-      {
-        "id": "promo2", 
-        "type": "discount",
-        "title": "Réduction nouveaux clients",
-        "description": "5% de réduction pour votre premier achat",
-        "condition": "new_customer",
-        "value": 5,
-        "valid_until": "2024-12-31"
-      }
-    ]
-  },
-  "settings": {
-    "currency": "FCFA",
-    "tax_rate": 0,
-    "min_order_amount": 5000,
-    "max_order_amount": 2000000,
-    "default_image": "assets/images/products/placeholder.jpg",
-    "products_per_page": 12,
-    "featured_products_count": 6,
-    "auto_backup": true,
-    "version": "1.0"
-  }
+  "exportDate": "2025-07-22T17:29:19.089Z",
+  "version": "2.0"
 }
